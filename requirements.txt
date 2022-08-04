@@ -1,0 +1,6 @@
+pyinstaller
+colorama
+pyCryptodome
+PySimpleGUI
+requests
+orator
