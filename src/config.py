@@ -3,6 +3,7 @@ from typing import Optional
 
 from orator import Model
 
+from classes.Client import ClientConfig
 from classes.Game import GamePlatform, GameEnvironment, GameAccount
 
 '''
@@ -46,9 +47,10 @@ JP_ENV = GameEnvironment(
   db_path=Path('data/jp.db')
 )
 
+client: ClientConfig = ClientConfig(path=Path('./config.json'))
 game_env: GameEnvironment = GB_ENV
 game_platform: GamePlatform = ANDROID_PLATFORM
-game_account: "Optional[GameAccount]" = None
+game_account: Optional[GameAccount] = None
 Model.set_connection_resolver(game_env.db_manager)
 
 ### Reroll parameters
