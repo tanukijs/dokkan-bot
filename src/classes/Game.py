@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 from orator import DatabaseManager
 
@@ -39,3 +40,18 @@ class GameEnvironment:
         'database': db_path
       }
     })
+
+class GameAccount:
+  def __init__(
+    self,
+    ad_id: str,
+    unique_id: str,
+    identifier: Optional[str] = None,
+    access_token: Optional[str] = None,
+    secret: Optional[str] = None
+  ):
+    self.ad_id = ad_id
+    self.unique_id = unique_id
+    self.identifier = identifier
+    self.access_token = access_token
+    self.secret = secret

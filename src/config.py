@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import Optional
 
 from orator import Model
 
-from classes.Game import GamePlatform, GameEnvironment
+from classes.Game import GamePlatform, GameEnvironment, GameAccount
 
 '''
 version codes these can be updated automatically but it'd require an APK download.
@@ -47,13 +48,8 @@ JP_ENV = GameEnvironment(
 
 game_env: GameEnvironment = GB_ENV
 game_platform: GamePlatform = ANDROID_PLATFORM
+game_account: "Optional[GameAccount]" = None
 Model.set_connection_resolver(game_env.db_manager)
-
-AdId = None
-UniqueId = None
-identifier = None
-access_token = None
-secret = None
 
 ### Reroll parameters
 last_save_name = ''

@@ -8,9 +8,9 @@ import config
 def create_file_command(filename, save_name):
   try:
     f = open(os.path.join(filename), 'w')
-    f.write(str(config.identifier) + '\n')
-    f.write(str(config.AdId) + '\n')
-    f.write(str(config.UniqueId) + '\n')
+    f.write(str(config.game_account.identifier) + '\n')
+    f.write(str(config.game_account.ad_id) + '\n')
+    f.write(str(config.game_account.unique_id) + '\n')
     f.write(str(config.game_platform.name) + '\n')
     f.write(str(config.game_env.name) + '\n')
     f.close()

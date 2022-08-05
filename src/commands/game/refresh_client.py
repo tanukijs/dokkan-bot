@@ -5,5 +5,7 @@ from commands.auth.signin import signin_command
 
 
 def refresh_client_command():
-  config.access_token, config.secret = signin_command(config.identifier)
+  access_token, secret = signin_command(config.game_account.identifier)
+  config.game_account.access_token = access_token
+  config.game_account.secret = secret
   print(Fore.GREEN + Style.BRIGHT + 'Refreshed Token')

@@ -2,6 +2,7 @@ import os
 import sys
 
 import config
+from classes.Game import GameAccount
 from commands.game.accept_gifts import accept_gifts_command
 from commands.game.accept_missions import accept_missions_command
 from commands.game.complete_potential import complete_potential_command
@@ -13,9 +14,11 @@ from user_command_executor import user_command_executor_command
 
 def bulk_daily_save_processor_command(save, login, gift, daily_events, user_input):
   f = open(os.path.join(save), 'r')
-  config.identifier = f.readline().rstrip()
-  config.AdId = f.readline().rstrip()
-  config.UniqueId = f.readline().rstrip()
+  config.game_account = GameAccount(
+    identifier=f.readline().rstrip(),
+    ad_id=f.readline().rstrip(),
+    unique_id=f.readline().rstrip()
+  )
   config.game_platform = config.IOS_PLATFORM if f.readline().rstrip() == 'ios' else config.ANDROID_PLATFORM
   config.game_env = config.JP_ENV if f.readline().rstrip() == 'japan' else config.GB_ENV
   f.close()

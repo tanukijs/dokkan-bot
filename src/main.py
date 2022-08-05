@@ -4,7 +4,7 @@ import requests
 from colorama import Fore, Style, init
 
 import config
-from classes.Game import GameEnvironment
+from classes.Game import GameEnvironment, GameAccount
 from commands.auth.db_download import db_download_command
 from commands.auth.load_account import load_account_command
 from commands.auth.save_account import save_account_command
@@ -140,9 +140,11 @@ while True:
           config.reroll_state = False
         if command == '0':
           print(' ')
-          config.identifier = signup_command(config.reroll_state)
+          config.game_account = signup_command(config.reroll_state)
           save_account_command(config.reroll_state)
-          config.access_token, config.secret = signin_command(config.identifier)
+          access_token, secret = signin_command(config.game_account.identifier)
+          config.game_account.access_token = access_token
+          config.game_account.secret = secret
           tutorial_command()
           daily_login_command()
           if config.reroll_state:
@@ -168,9 +170,13 @@ while True:
         elif command == '3':
           print(' ')
           print(Fore.CYAN + Style.BRIGHT + 'Enter identifier below...')
-          config.identifier = input()
+          config.game_account = GameAccount(
+            identifier=input()
+          )
           save_account_command(config.reroll_state)
-          config.access_token, config.secret = signin_command(config.identifier)
+          access_token, secret = signin_command(config.game_account.identifier)
+          config.game_account.access_token = access_token
+          config.game_account.secret = secret
           daily_login_command()
           accept_gifts_command()
           accept_missions_command()

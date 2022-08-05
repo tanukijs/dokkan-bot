@@ -3,32 +3,28 @@ import json
 import webbrowser
 
 import requests
+from typing import Optional
 from colorama import Fore, Style
 
 import config
 import crypto
+from classes.Game import GameAccount
 from commands.auth.set_platform import set_platform_command
 
 
-def signup_command(reroll_state):
-  # returns string identifier to be formatted and used by SignIn function
-
-  # Set platform to use
+def signup_command(reroll_state) -> "Optional[GameAccount]":
   set_platform_command(reroll_state)
-
-  # Generate AdId and Unique ID to send to Bandai
-  config.AdId = crypto.guid()['AdId']
-  config.UniqueId = crypto.guid()['UniqueId']
+  guid = crypto.guid()
 
   user_acc = {
-    'ad_id': config.AdId,
+    'ad_id': guid['AdId'],
+    'unique_id': guid['UniqueId'],
     'country': 'AU',
     'currency': 'AUD',
     'device': config.game_platform.device_name,
     'device_model': config.game_platform.device_model,
     'os_version': config.game_platform.os_version,
     'platform': config.game_platform.name,
-    'unique_id': config.UniqueId,
   }
   user_account = json.dumps({'user_account': user_acc})
 
@@ -42,8 +38,8 @@ def signup_command(reroll_state):
   url = config.game_env.url + '/auth/sign_up'
   r = requests.post(url, data=user_account, headers=headers)
 
-  # ## It is now necessary to solve the captcha. Opens browser window
-  # ## in order to solve it. Script waits for user input before continuing
+  # It is now necessary to solve the captcha. Opens browser window
+  # in order to solve it. Script waits for user input before continuing
   print(r.json())
   if 'captcha_url' not in r.json():
     print(Fore.RED + Style.BRIGHT + 'Captcha could not be loaded...')
@@ -68,6 +64,11 @@ def signup_command(reroll_state):
 
   # ##Return identifier for account, this changes upon transferring account
   try:
-    return base64.b64decode(r.json()['identifier']).decode('utf-8')
+    identifier = base64.b64decode(r.json()['identifier']).decode('utf-8')
+    return GameAccount(
+      ad_id=guid['AdId'],
+      unique_id=guid['UniqueId'],
+      identifier=identifier
+    )
   except:
     return None

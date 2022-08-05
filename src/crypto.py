@@ -66,11 +66,10 @@ def mac(method, action):
           + config.game_env.url.replace('https://', '') + '\n' + str(config.game_env.port) + '''
 
 '''
-
-  hmac_hex_bin = hmac.new(config.secret.encode('utf-8'), value.encode('utf-8'
-                                                                      ), hashlib.sha256).digest()
+  secret = config.game_account.secret.encode('utf-8')
+  hmac_hex_bin = hmac.new(secret, value.encode('utf-8'), hashlib.sha256).digest()
   mac = base64.b64encode(hmac_hex_bin).decode()
-  final = 'MAC ' + 'id=' + '"' + config.access_token + '"' + ' nonce=' + '"' \
+  final = 'MAC ' + 'id=' + '"' + config.game_account.access_token + '"' + ' nonce=' + '"' \
           + nonce + '"' + ' ts=' + '"' + ts + '"' + ' mac=' + '"' + mac \
           + '"'
   return final

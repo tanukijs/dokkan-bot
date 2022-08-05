@@ -2,6 +2,8 @@ import os
 
 import config
 from colorama import Fore, Style
+
+from classes.Game import GameAccount
 from commands.game.refresh_client import refresh_client_command
 
 
@@ -15,9 +17,11 @@ def load_account_command():
     else:
       try:
         f = open(file_path, 'r')
-        config.identifier = f.readline().rstrip()
-        config.AdId = f.readline().rstrip()
-        config.UniqueId = f.readline().rstrip()
+        config.game_account = GameAccount(
+          identifier=f.readline().rstrip(),
+          ad_id=f.readline().rstrip(),
+          unique_id=f.readline().rstrip(),
+        )
         config.game_platform = config.IOS_PLATFORM if f.readline().rstrip() == 'ios' else config.ANDROID_PLATFORM
         client = f.readline().rstrip()
         if config.game_env.name == client:

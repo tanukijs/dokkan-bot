@@ -27,8 +27,10 @@ def db_download_command():
       f.close()
 
   # Set first db to download to global.
-  config.identifier = signup_command(False)
-  config.access_token, config.secret = signin_command(config.identifier)
+  config.game_account = signup_command(False)
+  access_token, secret = signin_command(config.game_account.identifier)
+  config.game_account.access_token = access_token
+  config.game_account.secret = secret
 
   headers = generate_headers('GET', '/client_assets/database')
   url = config.game_env.url + '/client_assets/database'
