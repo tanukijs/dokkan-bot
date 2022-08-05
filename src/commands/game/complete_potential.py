@@ -1,15 +1,10 @@
-import requests
-
 import config
+import network
 from commands.game.complete_stage import complete_stage_command
-from network.utils import generate_headers
 
 
 def complete_potential_command():
-    headers = generate_headers('GET', '/events')
-    url = config.game_env.url + '/events'
-    r = requests.get(url, headers=headers)
-    events = r.json()
+    events = network.get_events()
     for event in events['events']:
         if event['id'] >= 140 and event['id'] < 145:
             for quest in event['quests']:

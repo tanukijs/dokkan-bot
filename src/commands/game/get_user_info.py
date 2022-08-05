@@ -1,16 +1,9 @@
-import requests
-
 import config
-from network.utils import generate_headers
+import network
 
 
 def get_user_info_command():
-    # ## Returns User dictionary and info
-
-    headers = generate_headers('GET', '/user')
-    url = config.game_env.url + '/user'
-    r = requests.get(url, headers=headers)
-    user = r.json()
+    user = network.get_user()
 
     print('Account OS: ' + config.game_platform.name)
     print('User ID: ' + str(user['user']['id']))

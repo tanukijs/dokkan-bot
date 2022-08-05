@@ -1,34 +1,24 @@
 import PySimpleGUI as sg
-import requests
 
 import config
+import network
 from commands.game.sell_cards import sell_cards_command
-from network.utils import generate_headers
 
 
 def sell_cards__bulk_GUI_command():
     # Provides a GUI to select a range of cards to sell.
-    headers = generate_headers('GET', '/teams')
-    url = config.game_env.url + '/teams'
-    r = requests.get(url, headers=headers)
-
+    r = network.get_teams()
     team_cards = []
-    for team in r.json()['user_card_teams']:
+    for team in r['user_card_teams']:
         team_cards.extend(team['user_card_ids'])
 
-    headers = generate_headers('GET', '/support_leaders')
+    r = network.get_support_leaders()
+    team_cards.extend(r['support_leader_ids'])
 
-    url = config.game_env.url + '/support_leaders'
-    r = requests.get(url, headers=headers)
-    team_cards.extend(r.json()['support_leader_ids'])
-
-    headers = generate_headers('GET', '/cards')
-
-    url = config.game_env.url + '/cards'
-    r = requests.get(url, headers=headers)
+    r = network.get_cards()
 
     cards_master_dict = []
-    for card in r.json()['cards']:
+    for card in r['cards']:
         # Avoid selling favourited cards
         if card['is_favorite'] == True:
             continue

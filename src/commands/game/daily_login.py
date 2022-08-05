@@ -1,21 +1,21 @@
-import requests
-
-import config
-from network.utils import generate_headers
+import network
 
 
 def daily_login_command():
     # ## Accepts Outstanding Login Bonuses
-    headers = generate_headers('GET',
-                               '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true')
-    url = config.game_env.url + '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
-    r = requests.get(url, headers=headers)
-    if 'error' in r.json():
-        print(r.json())
+    r = network.get_resources_home(
+        apologies=True,
+        banners=True,
+        bonus_schedules=True,
+        budokai=True,
+        comeback_campaignss=True,
+        gifts=True,
+        login_bonuses=True,
+        rmbattles=True
+    )
+    if 'error' in r:
+        print(r)
 
-    headers = generate_headers('POST', '/login_bonuses/accept')
-    url = config.game_env.url + '/login_bonuses/accept'
-
-    r = requests.post(url, headers=headers)
-    if 'error' in r.json():
-        print(r.json())
+    r = network.post_login_bonuses_accept()
+    if 'error' in r:
+        print(r)

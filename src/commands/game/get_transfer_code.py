@@ -3,7 +3,6 @@ import json
 import requests
 
 import config
-from network.utils import generate_headers
 
 
 def get_transfer_code_command():

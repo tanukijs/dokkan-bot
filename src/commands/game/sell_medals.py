@@ -1,23 +1,18 @@
-import json
-
 import PySimpleGUI as sg
-import requests
 from colorama import Fore, Style
 
 import config
-from network.utils import generate_headers
+import network
 
 
 def sell_medals_command():
     # Get Medals
-    headers = generate_headers('GET', '/awakening_items')
     config.Model.set_connection_resolver(config.game_env.db_manager)
-    url = config.game_env.url + '/awakening_items'
-    r = requests.get(url, headers=headers)
+    r = network.get_awakening_items()
 
     # Create list with ID for listbox
     medal_list = []
-    for medal in reversed(r.json()['awakening_items']):
+    for medal in reversed(r['awakening_items']):
         config.Model.set_connection_resolver(config.game_env.db_manager)
         item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
 
@@ -47,9 +42,6 @@ def sell_medals_command():
             medalo = medal[1]
             amount = values[0]
 
-            headers = generate_headers('POST', '/awakening_items/exchange')
-            url = config.game_env.url + '/awakening_items/exchange'
-
             medal_id = int(medalo)
             chunk = int(amount) // 99
             remainder = int(amount) % 99
@@ -57,28 +49,24 @@ def sell_medals_command():
             window.Hide()
             window.Refresh()
             for i in range(chunk):
-                data = {'awakening_item_id': medal_id, 'quantity': 99}
-                r = requests.post(url, data=json.dumps(data), headers=headers)
-                if 'error' in r.json():
-                    print(Fore.RED + Style.BRIGHT + str(r.json))
+                r = network.post_awakening_item_exchange(medal_id, 99)
+                if 'error' in r:
+                    print(Fore.RED + Style.BRIGHT + str(r))
                 else:
                     print(Fore.GREEN + Style.BRIGHT + 'Sold Medals x' + str(99))
 
             if remainder > 0:
-                data = {'awakening_item_id': medal_id, 'quantity': remainder}
-                r = requests.post(url, data=json.dumps(data), headers=headers)
-                if 'error' in r.json():
-                    print(Fore.RED + Style.BRIGHT + str(r.json))
+                r = network.post_awakening_item_exchange(medal_id, remainder)
+                if 'error' in r:
+                    print(Fore.RED + Style.BRIGHT + str(r))
                 else:
                     print(Fore.GREEN + Style.BRIGHT + 'Sold Medals x' + str(remainder))
 
             # New medal list
-            headers = generate_headers('GET', '/awakening_items')
-            url = config.game_env.url + '/awakening_items'
-            r = requests.get(url, headers=headers)
+            r = network.get_awakening_items()
 
             medal_list[:] = []
-            for medal in reversed(r.json()['awakening_items']):
+            for medal in reversed(r['awakening_items']):
                 config.Model.set_connection_resolver(config.game_env.db_manager)
                 item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
 

@@ -4,20 +4,16 @@ import time
 from random import randint
 
 import PySimpleGUI as sg
-import requests
 from colorama import Fore, Style
 
 import config
 import crypto
+import network
 from commands.game.refill_stamina import refill_stamina_command
-from network.utils import generate_headers
 
 
 def complete_zbattle_stage_command(kagi=False):
-    headers = generate_headers('GET', '/events')
-    url = config.game_env.url + '/events'
-    r = requests.get(url, headers=headers)
-    events = r.json()
+    events = network.get_events()
 
     zbattles_to_display = []
     for event in events['z_battle_stages']:
@@ -56,23 +52,19 @@ def complete_zbattle_stage_command(kagi=False):
                 level = values['LEVEL']
 
                 ##Get supporters
-                headers = generate_headers('GET', '/z_battles/' + str(stage) + '/supporters')
-                url = config.game_env.url + '/z_battles/' + str(stage) + '/supporters'
-                r = requests.get(url, headers=headers)
-                if 'supporters' in r.json():
-                    supporter = r.json()['supporters'][0]['id']
-                    leader = r.json()['supporters'][0]['card_id']
-                elif 'error' in r.json():
-                    print(Fore.RED + Style.BRIGHT + r.json())
+                r = network.get_zbattles_supporters(str(stage))
+                if 'supporters' in r:
+                    supporter = r['supporters'][0]['id']
+                    leader = r['supporters'][0]['card_id']
+                elif 'error' in r:
+                    print(Fore.RED + Style.BRIGHT + r)
                     return 0
                 else:
                     print(Fore.RED + Style.BRIGHT + 'Problem with ZBattle')
-                    print(r.raw())
+                    print(r)
                     return 0
 
                 ###Send first request
-                headers = generate_headers('POST', '/z_battles/' + str(stage) + '/start')
-
                 if kagi == True:
                     sign = json.dumps({
                         'friend_id': int(supporter),
@@ -92,26 +84,23 @@ def complete_zbattle_stage_command(kagi=False):
                     })
 
                 enc_sign = crypto.encrypt_sign(sign)
-                data = {'sign': enc_sign}
-                url = config.game_env.url + '/z_battles/' + str(stage) + '/start'
-                r = requests.post(url, data=json.dumps(data), headers=headers)
+                r = network.post_zbattles_start(str(stage), enc_sign)
 
-                if 'sign' in r.json():
-                    dec_sign = crypto.decrypt_sign(r.json()['sign'])
+                if 'sign' in r:
+                    dec_sign = crypto.decrypt_sign(r['sign'])
                 # Check if error was due to lack of stamina
-                elif 'error' in r.json():
-                    if r.json()['error']['code'] == 'act_is_not_enough':
+                elif 'error' in r:
+                    if r['error']['code'] == 'act_is_not_enough':
                         # Check if allowed to refill stamina
                         if config.allow_stamina_refill == True:
                             refill_stamina_command()
-                            r = requests.post(url, data=json.dumps(data),
-                                              headers=headers)
+                            r = network.post_zbattles_start(str(stage), enc_sign)
                     else:
-                        print(r.json())
+                        print(r)
                         return 0
                 else:
                     print(Fore.RED + Style.BRIGHT + 'Problem with ZBattle')
-                    print(r.raw())
+                    print(r)
                     return 0
 
                 finish_time = int(round(time.time(), 0) + 2000)
@@ -141,25 +130,22 @@ def complete_zbattle_stage_command(kagi=False):
                     }
                 }
 
-                data = {
-                    'elapsed_time': finish_time - start_time,
-                    'is_cleared': True,
-                    'level': int(level),
-                    'reason': 'win',
-                    's': 'rGAX18h84InCwFGbd/4zr1FvDNKfmo/TJ02pd6onclk=',
-                    't': base64.b64encode(json.dumps(summary).encode()).decode(),
-                    'token': dec_sign['token'],
-                    'used_items': [],
-                    'z_battle_finished_at_ms': finish_time,
-                    'z_battle_started_at_ms': start_time,
-                }
                 # enc_sign = encrypt_sign(sign)
 
-                headers = generate_headers('POST', '/z_battles/' + str(stage) + '/finish')
-                url = config.game_env.url + '/z_battles/' + str(stage) + '/finish'
-
-                r = requests.post(url, data=json.dumps(data), headers=headers)
-                dec_sign = crypto.decrypt_sign(r.json()['sign'])
+                r = network.post_zbattles_finish(
+                    stage_id=str(stage),
+                    elapsed_time=finish_time - start_time,
+                    is_cleared=True,
+                    level=int(level),
+                    reason='win',
+                    s='rGAX18h84InCwFGbd/4zr1FvDNKfmo/TJ02pd6onclk=',
+                    t=base64.b64encode(json.dumps(summary).encode()).decode(),
+                    token=dec_sign['token'],
+                    used_items=[],
+                    z_battle_started_at_ms=start_time,
+                    z_battle_finished_at_ms=finish_time
+                )
+                dec_sign = crypto.decrypt_sign(r['sign'])
                 # ## Print out Items from Database
                 print('Level: ' + str(level))
                 # ## Print out Items from Database

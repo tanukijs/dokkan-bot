@@ -1,19 +1,12 @@
 import json
 
-import requests
-
 import config
-from network.utils import generate_headers
+import network
 
 
 def get_kagi_id_command(stage):
     # return kagi ID to use for a stage
-
-    headers = generate_headers('GET', '/eventkagi_items')
-    url = config.game_env.url + '/eventkagi_items'
-    r = requests.get(url, headers=headers)
-
-    kagi_items = r.json()['eventkagi_items']
+    kagi_items = network.get_eventkagi_items()['eventkagi_items']
     area_id = config.Quests.find(stage).area_id
     area_category = config.Area.find(area_id).category
     areatabs = config.AreaTabs.all()

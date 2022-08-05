@@ -1,11 +1,8 @@
-import json
-
 import PySimpleGUI as sg
-import requests
 from colorama import Fore, Style
 
 import config
-from network.utils import generate_headers
+import network
 
 
 def change_team_command():
@@ -16,10 +13,7 @@ def change_team_command():
 
     ###Get user cards
     print(Fore.CYAN + Style.BRIGHT + 'Fetching user cards...')
-    headers = generate_headers('GET', '/cards')
-    url = config.game_env.url + '/cards'
-    r = requests.get(url, headers=headers)
-    master_cards = r.json()['cards']
+    master_cards = network.get_cards()['cards']
     print(Fore.GREEN + Style.BRIGHT + 'Done...')
 
     ###Sort user cards into a list of dictionaries with attributes
@@ -257,18 +251,16 @@ def change_team_command():
 
     window.Close()
     ###Send selected team to bandai
-    headers = generate_headers('POST', '/teams')
-    url = config.game_env.url + '/teams'
-    # print(chosen_cards_unique_ids)
-    data = {'selected_team_num': 1, 'user_card_teams': [
-        {'num': chosen_deck, 'user_card_ids': chosen_cards_unique_ids},
-    ]}
-    # print(data)
-    r = requests.post(url, data=json.dumps(data), headers=headers)
-    if 'error' in r.json():
-        print(Fore.RED + Style.BRIGHT + str(r.json()))
+    r = network.post_teams(
+        selected_team_num=1,
+        user_card_teams=[
+            {'num': chosen_deck, 'user_card_ids': chosen_cards_unique_ids}
+        ]
+    )
+
+    if 'error' in r:
+        print(Fore.RED + Style.BRIGHT + str(r))
     else:
-        # print(r.json())
         print(chosen_cards_names)
         print(Fore.GREEN + Style.BRIGHT + "Deck updated!")
 

@@ -3,15 +3,14 @@ import random
 import time
 from random import randint
 
-import requests
 from colorama import Fore, Style
 
 import config
 import crypto
+import network
 from commands.game.get_friend import get_friend_command
 from commands.game.refill_stamina import refill_stamina_command
 from commands.game.sell_cards import sell_cards_command
-from network.utils import generate_headers
 
 
 def complete_stage_command(stage_id, difficulty, kagi=None):
@@ -74,44 +73,38 @@ def complete_stage_command(stage_id, difficulty, kagi=None):
     enc_sign = crypto.encrypt_sign(sign)
 
     # ## Send First Request
-
-    headers = generate_headers('POST', '/quests/${stage_id}/sugoroku_maps/start')
-    data = {'sign': enc_sign}
-
-    url = config.game_env.url + '/quests/' + stage_id + '/sugoroku_maps/start'
-
-    r = requests.post(url, data=json.dumps(data), headers=headers)
+    r = network.post_quests_sugoroku_start(stage_id, enc_sign)
 
     # Form second request
     # Time for request sent
 
-    if 'sign' in r.json():
-        dec_sign = crypto.decrypt_sign(r.json()['sign'])
-    elif 'error' in r.json():
-        print(Fore.RED + Style.BRIGHT + str(r.json()['error']))
+    if 'sign' in r:
+        dec_sign = crypto.decrypt_sign(r['sign'])
+    elif 'error' in r:
+        print(Fore.RED + Style.BRIGHT + str(r['error']))
         # Check if error was due to lack of stamina
-        if r.json()['error']['code'] == 'act_is_not_enough':
+        if r['error']['code'] == 'act_is_not_enough':
             # Check if allowed to refill stamina
             if config.allow_stamina_refill == True:
                 refill_stamina_command()
-                r = requests.post(url, data=json.dumps(data),
-                                  headers=headers)
+                r = network.post_quests_sugoroku_start(stage_id, enc_sign)
             else:
                 print(Fore.RED + Style.BRIGHT + 'Stamina refill not allowed.')
                 return 0
-        elif r.json()['error']['code'] == 'active_record/record_not_found':
+        elif r['error']['code'] == 'active_record/record_not_found':
             return 0
-        elif r.json()['error']['code'] == 'invalid_area_conditions_potential_releasable':
+        elif r['error']['code'] == 'invalid_area_conditions_potential_releasable':
             print(Fore.RED + Style.BRIGHT + 'You do not meet the coniditions to complete potential events')
             return 0
         else:
-            print(Fore.RED + Style.BRIGHT + str(r.json()['error']))
+            print(Fore.RED + Style.BRIGHT + str(r['error']))
             return 0
     else:
-        print(Fore.RED + Style.BRIGHT + str(r.json()))
+        print(Fore.RED + Style.BRIGHT + str(r))
         return 0
-    if 'sign' in r.json():
-        dec_sign = crypto.decrypt_sign(r.json()['sign'])
+    if 'sign' in r:
+        dec_sign = crypto.decrypt_sign(r['sign'])
+
     # Retrieve possible tile steps from response
     steps = []
     defeated = []
@@ -151,14 +144,8 @@ def complete_stage_command(stage_id, difficulty, kagi=None):
     enc_sign = crypto.encrypt_sign(json.dumps(sign))
 
     # Send second request
-
-    headers = generate_headers('POST', '/quests/' + stage_id + '/sugoroku_maps/finish')
-    data = {'sign': enc_sign}
-    url = config.game_env.url + '/quests/' + stage_id \
-          + '/sugoroku_maps/finish'
-
-    r = requests.post(url, data=json.dumps(data), headers=headers)
-    dec_sign = crypto.decrypt_sign(r.json()['sign'])
+    r = network.post_quests_sugoroku_finish(stage_id, enc_sign)
+    dec_sign = crypto.decrypt_sign(r['sign'])
 
     # ## Print out Items from Database
     if 'items' in dec_sign:

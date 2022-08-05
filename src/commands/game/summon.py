@@ -1,18 +1,15 @@
 import PySimpleGUI as sg
-import requests
 from colorama import Back, Fore, Style
 
 import config
+import network
 from commands.game.get_remaining_stones import get_remaining_stones_command
-from network.utils import generate_headers
 
 
 def summon_command():
-    headers = generate_headers('GET', '/gashas')
-    url = config.game_env.url + '/gashas'
-    r = requests.get(url, headers=headers)
+    r = network.get_gashas()
     gashas = []
-    for gasha in r.json()['gashas']:
+    for gasha in r['gashas']:
         gashas.append(gasha['name'] + ' | ' + str(gasha['id']))
 
     layout = [[sg.Listbox(values=(gashas), size=(50, 20), key='GASHAS')],
@@ -29,12 +26,10 @@ def summon_command():
         if event == 'SUMMON' and len(values['GASHAS']) > 0:
             summon_id = values['GASHAS'][0].split(' | ')[1]
             if values[0]:
-                headers = generate_headers('POST', '/gashas/' + str(summon_id) + '/courses/2/draw')
-                url = config.game_env.url + '/gashas/' + str(summon_id) + '/courses/2/draw'
                 window.Hide()
                 window.Refresh()
                 for i in range(int(values['LOOP'])):
-                    r = requests.post(url, headers=headers).json()
+                    r = network.post_gashas_draw(str(summon_id), '2')
                     if 'error' in r:
                         print(r)
                         window.Close()
@@ -72,15 +67,11 @@ def summon_command():
                         print(card)
                 window.UnHide()
                 window.Refresh()
-
-
             else:
-                headers = generate_headers('POST', '/gashas/' + str(summon_id) + '/courses/1/draw')
-                url = config.game_env.url + '/gashas/' + str(summon_id) + '/courses/1/draw'
                 window.Hide()
                 window.Refresh()
                 for i in range(int(values['LOOP'])):
-                    r = requests.post(url, headers=headers).json()
+                    r = network.post_gashas_draw(str(summon_id), '1')
                     if 'error' in r:
                         print(r)
                         window.Close()

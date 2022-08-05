@@ -4,9 +4,9 @@ import requests
 from colorama import Fore, Style
 
 import config
+import network
 from commands.auth.signin import signin_command
 from commands.auth.signup import signup_command
-from network.utils import generate_headers
 from pysqlsimplecipher.decryptor import decrypt_file
 
 
@@ -16,17 +16,15 @@ def db_download_command():
     config.game_account.access_token = access_token
     config.game_account.secret = secret
 
-    headers = generate_headers('GET', '/client_assets/database')
-    url = config.game_env.url + '/client_assets/database'
-    r = requests.get(url, allow_redirects=True, headers=headers)
-    dist_db_version = r.json()['version']
+    r = network.get_client_assets_database()
+    dist_db_version = r['version']
 
     if config.client.gb_db_version == dist_db_version:
         print(Fore.GREEN + Style.BRIGHT + 'Database is already up to date')
         return
 
     print(Fore.RED + Style.BRIGHT + 'Downloading latest global database...')
-    url = r.json()['url']
+    url = r['url']
     r = requests.get(url, allow_redirects=True)
     temp_db_name = str(randint(10_000_00, 99_999_99)) + '.db'
     open(temp_db_name, 'wb').write(r.content)

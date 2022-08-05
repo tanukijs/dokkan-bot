@@ -1,11 +1,8 @@
-import json
-
 import PySimpleGUI as sg
-import requests
 from colorama import Fore, Style
 
 import config
-from network.utils import generate_headers
+import network
 
 
 def change_supporter_command():
@@ -13,10 +10,7 @@ def change_supporter_command():
 
     ###Get user cards
     print(Fore.CYAN + Style.BRIGHT + 'Fetching user cards...')
-    headers = generate_headers('GET', '/cards')
-    url = config.game_env.url + '/cards'
-    r = requests.get(url, headers=headers)
-    master_cards = r.json()['cards']
+    master_cards = network.get_cards()['cards']
     print(Fore.GREEN + Style.BRIGHT + 'Done...')
 
     ###Sort user cards into a list of dictionaries with attributes
@@ -220,16 +214,10 @@ def change_supporter_command():
 
     window.Close()
     ###Send selected supporter to bandai
-    headers = generate_headers('PUT', '/support_leaders')
-    url = config.game_env.url + '/support_leaders'
-    # print(chosen_cards_unique_ids)
-    data = {'support_leader_ids': chosen_cards_unique_ids}
-    # print(data)
-    r = requests.put(url, data=json.dumps(data), headers=headers)
-    if 'error' in r.json():
-        print(Fore.RED + Style.BRIGHT + str(r.json()))
+    r = network.put_support_leaders(chosen_cards_unique_ids)
+    if 'error' in r:
+        print(Fore.RED + Style.BRIGHT + str(r))
     else:
-        # print(r.json())
         print(chosen_cards_names)
         print(Fore.GREEN + Style.BRIGHT + "Supporter updated!")
 

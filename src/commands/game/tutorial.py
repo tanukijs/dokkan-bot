@@ -1,62 +1,36 @@
-import json
-
-import requests
 from colorama import Fore, Style
 
-import config
-from network.utils import generate_headers
+import network
 
 
 def tutorial_command():
     # ##Progress NULL TUTORIAL FINISH
 
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 1/8')
-    headers = generate_headers('PUT', '/tutorial/finish')
-    url = config.game_env.url + '/tutorial/finish'
-    r = requests.put(url, headers=headers)
+    network.put_tutorial_finish()
 
     # ##Progress NULL Gasha
-
-    headers = generate_headers('POST', '/tutorial/gasha')
-    url = config.game_env.url + '/tutorial/gasha'
-    r = requests.post(url, headers=headers)
+    network.post_tutorial_gasha()
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 2/8')
 
     # ##Progress to 999%
 
-    headers = generate_headers('PUT', '/tutorial')
-    progress = {'progress': '999'}
-    url = config.game_env.url + '/tutorial'
-    r = requests.put(url, data=json.dumps(progress), headers=headers)
+    network.put_tutorial('999')
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 3/8')
 
     # ##Change User name
-
-    headers = generate_headers('PUT', '/user')
-    user = {'user': {'name': 'Ninja'}}
-    url = config.game_env.url + '/user'
-    r = requests.put(url, data=json.dumps(user), headers=headers)
+    network.put_user(name="Naruto")
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 4/8')
 
     # ##/missions/put_forward
-
-    headers = generate_headers('POST', '/missions/put_forward')
-    url = config.game_env.url + '/missions/put_forward'
-    r = requests.post(url, headers=headers)
+    network.post_missions_put_forward()
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 5/8')
 
     # ##Apologies accept
-
-    headers = generate_headers('PUT', '/apologies/accept')
-    url = config.game_env.url + '/apologies/accept'
-    r = requests.put(url, headers=headers)
+    network.put_apologies_accept()
 
     # ##On Demand
-
-    headers = generate_headers('PUT', '/user')
-    url = config.game_env.url + '/user'
-    data = {'user': {'is_ondemand': True}}
-    r = requests.put(url, data=json.dumps(data), headers=headers)
+    network.put_user(is_ondemand=True)
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 6/8')
 
     # ##Hidden potential releasable

@@ -1,9 +1,6 @@
-import requests
-
-import config
+import network
 from commands.game.complete_stage import complete_stage_command
 from commands.game.refresh_client import refresh_client_command
-from network.utils import generate_headers
 
 
 # noinspection SyntaxError
@@ -11,12 +8,11 @@ def complete_unfinished_quest_stages_command():
     # ## Will eventually use this to streamline stuff
     # type: (object, object) -> object
 
-    headers = generate_headers('GET', '/user_areas')
-    url = config.game_env.url + '/user_areas'
-    r = requests.get(url, headers=headers)
+    r = network.get_user_areas()
+
 
     maps = []
-    for user in r.json()['user_areas']:
+    for user in r:
         for map in user['user_sugoroku_maps']:
             if map['cleared_count'] == 0 and map['sugoroku_map_id'] < 999999 and map['sugoroku_map_id'] > 100:
                 maps.append(map)
@@ -32,11 +28,8 @@ def complete_unfinished_quest_stages_command():
         for map in maps:
             complete_stage_command(str(map['sugoroku_map_id'])[:-1], str(map['sugoroku_map_id'])[-1])
 
-        headers = generate_headers('GET', '/user_areas')
-        r = requests.get(url, headers=headers)
         maps_check = []
-        # print(r.json())
-        for user in r.json()['user_areas']:
+        for user in r['user_areas']:
             for map in user['user_sugoroku_maps']:
                 if map['cleared_count'] == 0 and map['sugoroku_map_id'] < 999999 and map['sugoroku_map_id'] > 100:
                     maps_check.append(map)

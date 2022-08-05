@@ -1,19 +1,14 @@
 import PySimpleGUI as sg
-import requests
 
 import config
+import network
 from commands.game.complete_stage import complete_stage_command
-from network.utils import generate_headers
 
 
 def event_viewer_command():
     # Event GUI with options to complete stage.
     # JP Translation needs work
-
-    headers = generate_headers('GET', '/events')
-    url = config.game_env.url + '/events'
-    r = requests.get(url, headers=headers)
-    events = r.json()
+    events = network.get_events()
 
     # Build areas list
     areas_to_display = []

@@ -1,16 +1,13 @@
 import PySimpleGUI as sg
-import requests
 
 import config
-from network.utils import generate_headers
+import network
 
 
 def list_cards_command():
-    headers = generate_headers('GET', '/cards')
-    url = config.game_env.url + '/cards'
-    r = requests.get(url, headers=headers)
+    r = network.get_cards()
     cards = {}
-    for card in r.json()['cards']:
+    for card in r['cards']:
         config.Model.set_connection_resolver(config.game_env.db_manager)
         name = config.Cards.find_or_fail(card['card_id']).name
         element = str(config.Cards.find_or_fail(card['card_id']).element)

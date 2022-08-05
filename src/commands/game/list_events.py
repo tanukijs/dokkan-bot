@@ -1,17 +1,13 @@
-import requests
 from colorama import Back, Fore, Style
 
 import config
-from network.utils import generate_headers
+import network
 
 
 def list_events_command():
     # Prints all currently available events
     # JP Translated
-    headers = generate_headers('GET', '/events')
-    url = config.game_env.url + '/events'
-    r = requests.get(url, headers=headers)
-    events = r.json()
+    events = network.get_events()
 
     area_id = None
     for event in events['events']:

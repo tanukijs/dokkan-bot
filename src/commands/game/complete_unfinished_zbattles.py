@@ -2,22 +2,18 @@ import json
 import time
 from random import randint
 
-import requests
 from colorama import Fore, Style
 
 import config
 import crypto
+import network
 from commands.game.refill_stamina import refill_stamina_command
 from commands.game.refresh_client import refresh_client_command
-from network.utils import generate_headers
 
 
 def complete_unfinished_zbattles_command(kagi=False):
     # JP Translated
-    headers = generate_headers('GET', '/events')
-    url = config.game_env.url + '/events'
-    r = requests.get(url, headers=headers)
-    events = r.json()
+    events = network.get_events()
     try:
         for event in events['z_battle_stages']:
             config.Model.set_connection_resolver(config.game_env.db_manager)
@@ -26,11 +22,9 @@ def complete_unfinished_zbattles_command(kagi=False):
             print(Fore.CYAN + Style.BRIGHT + ' | ID: ' + str(event['id']))
 
             # Get current zbattle level
-            headers = generate_headers('GET', '/user_areas')
-            url = config.game_env.url + '/user_areas'
-            r = requests.get(url, headers=headers)
-            if 'user_z_battles' in r.json():
-                zbattles = r.json()['user_z_battles']
+            r = network.get_user_areas()
+            if 'user_z_battles' in r:
+                zbattles = r['user_z_battles']
                 if zbattles == []:
                     zbattles = 0
             else:
@@ -45,22 +39,18 @@ def complete_unfinished_zbattles_command(kagi=False):
             # Stop at level 30 !! This may not work for all zbattle e.g kid gohan
             while level < 31:
                 ##Get supporters
-                headers = generate_headers('GET', '/z_battles/' + str(event['id']) + '/supporters')
-                url = config.game_env.url + '/z_battles/' + str(event['id']) + '/supporters'
-                r = requests.get(url, headers=headers)
-                if 'supporters' in r.json():
-                    supporter = r.json()['supporters'][0]['id']
-                elif 'error' in r.json():
-                    print(Fore.RED + Style.BRIGHT + r.json())
+                r = network.get_zbattles_supporters()
+                if 'supporters' in r:
+                    supporter = r['supporters'][0]['id']
+                elif 'error' in r:
+                    print(Fore.RED + Style.BRIGHT + r)
                     return 0
                 else:
                     print(Fore.RED + Style.BRIGHT + 'Problem with ZBattle')
-                    print(r.raw())
+                    print(r)
                     return 0
 
                 ###Send first request
-                headers = generate_headers('POST', '/z_battles/' + str(event['id']) + '/start')
-
                 if kagi == True:
                     sign = json.dumps({
                         'friend_id': supporter,
@@ -76,49 +66,41 @@ def complete_unfinished_zbattles_command(kagi=False):
                     })
 
                 enc_sign = crypto.encrypt_sign(sign)
-                data = {'sign': enc_sign}
-                url = config.game_env.url + '/z_battles/' + str(event['id']) + '/start'
-                r = requests.post(url, data=json.dumps(data), headers=headers)
+                r = network.post_zbattles_start(str(event['id']), enc_sign)
 
-                if 'sign' in r.json():
-                    dec_sign = crypto.decrypt_sign(r.json()['sign'])
+                if 'sign' in r:
+                    dec_sign = crypto.decrypt_sign(r['sign'])
                 # Check if error was due to lack of stamina
-                elif 'error' in r.json():
-                    if r.json()['error']['code'] == 'act_is_not_enough':
+                elif 'error' in r:
+                    if r['error']['code'] == 'act_is_not_enough':
                         # Check if allowed to refill stamina
                         if config.allow_stamina_refill == True:
                             refill_stamina_command()
-                            r = requests.post(url, data=json.dumps(data),
-                                              headers=headers)
+                            network.post_zbattles_start(str(event['id']), enc_sign)
                     else:
-                        print(r.json())
+                        print(r)
                         return 0
                 else:
                     print(Fore.RED + Style.BRIGHT + 'Problem with ZBattle')
-                    print(r.raw())
+                    print(r)
                     return 0
 
                 finish_time = int(round(time.time(), 0) + 2000)
                 start_time = finish_time - randint(6200000, 8200000)
 
-                data = {
-                    'elapsed_time': finish_time - start_time,
-                    'is_cleared': True,
-                    'level': level,
-                    's': 'rGAX18h84InCwFGbd/4zr1FvDNKfmo/TJ02pd6onclk=',
-                    't': 'eyJzdW1tYXJ5Ijp7ImVuZW15X2F0dGFjayI6MTAwMzg2LCJlbmVteV9hdHRhY2tfY291bnQiOjUsImVuZW15X2hlYWxfY291bnRzIjpbMF0sImVuZW15X2hlYWxzIjpbMF0sImVuZW15X21heF9hdHRhY2siOjEwMDAwMCwiZW5lbXlfbWluX2F0dGFjayI6NTAwMDAsInBsYXllcl9hdHRhY2tfY291bnRzIjpbMTBdLCJwbGF5ZXJfYXR0YWNrcyI6WzMwNjYwNTJdLCJwbGF5ZXJfaGVhbCI6MCwicGxheWVyX2hlYWxfY291bnQiOjAsInBsYXllcl9tYXhfYXR0YWNrcyI6WzEyMzY4NTBdLCJwbGF5ZXJfbWluX2F0dGFja3MiOls0NzcxOThdLCJ0eXBlIjoic3VtbWFyeSJ9fQ==',
-                    'token': dec_sign['token'],
-                    'used_items': [],
-                    'z_battle_finished_at_ms': finish_time,
-                    'z_battle_started_at_ms': start_time,
-                }
                 # enc_sign = encrypt_sign(sign)
-
-                headers = generate_headers('POST', '/z_battles/' + str(event['id']) + '/finish')
-                url = config.game_env.url + '/z_battles/' + str(event['id']) + '/finish'
-
-                r = requests.post(url, data=json.dumps(data), headers=headers)
-                dec_sign = crypto.decrypt_sign(r.json()['sign'])
+                r = network.post_zbattles_finish(
+                    stage_id=str(event['id']),
+                    is_cleared=True,
+                    level=level,
+                    s='rGAX18h84InCwFGbd/4zr1FvDNKfmo/TJ02pd6onclk=',
+                    t='eyJzdW1tYXJ5Ijp7ImVuZW15X2F0dGFjayI6MTAwMzg2LCJlbmVteV9hdHRhY2tfY291bnQiOjUsImVuZW15X2hlYWxfY291bnRzIjpbMF0sImVuZW15X2hlYWxzIjpbMF0sImVuZW15X21heF9hdHRhY2siOjEwMDAwMCwiZW5lbXlfbWluX2F0dGFjayI6NTAwMDAsInBsYXllcl9hdHRhY2tfY291bnRzIjpbMTBdLCJwbGF5ZXJfYXR0YWNrcyI6WzMwNjYwNTJdLCJwbGF5ZXJfaGVhbCI6MCwicGxheWVyX2hlYWxfY291bnQiOjAsInBsYXllcl9tYXhfYXR0YWNrcyI6WzEyMzY4NTBdLCJwbGF5ZXJfbWluX2F0dGFja3MiOls0NzcxOThdLCJ0eXBlIjoic3VtbWFyeSJ9fQ==',
+                    token=dec_sign['token'],
+                    used_items=[],
+                    z_battle_started_at_ms=start_time,
+                    z_battle_finished_at_ms=finish_time
+                )
+                dec_sign = crypto.decrypt_sign(r['sign'])
                 # ## Print out Items from Database
                 print('Level: ' + str(level))
                 # ## Print out Items from Database
