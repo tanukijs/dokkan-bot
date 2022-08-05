@@ -4,7 +4,7 @@ import requests
 from colorama import Fore, Style, init
 
 import config
-from classes.GameEnvironment import GameEnvironment
+from classes.Game import GameEnvironment
 from commands.auth.db_download import db_download_command
 from commands.auth.load_account import load_account_command
 from commands.auth.save_account import save_account_command

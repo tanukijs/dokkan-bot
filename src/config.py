@@ -2,7 +2,7 @@ from pathlib import Path
 
 from orator import Model
 
-from classes.GameEnvironment import GamePlatform, GameEnvironment
+from classes.Game import GamePlatform, GameEnvironment
 
 '''
 version codes these can be updated automatically but it'd require an APK download.

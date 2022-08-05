@@ -3,7 +3,7 @@ import crypto
 
 
 # Remove key that have a None values
-from classes.GameEnvironment import GamePlatform
+from classes.Game import GamePlatform
 
 
 def generate_headers(
