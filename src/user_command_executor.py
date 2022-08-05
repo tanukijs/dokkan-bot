@@ -34,92 +34,92 @@ from commands.game.summon import summon_command
 
 
 def user_command_executor_command(command):
-  if ',' in command:
-    command = command.replace(" ", "")
-    command = command.replace(",", "\n")
-    s = io.StringIO(command + '\n')
-    sys.stdin = s
-    command = input()
+    if ',' in command:
+        command = command.replace(" ", "")
+        command = command.replace(",", "\n")
+        s = io.StringIO(command + '\n')
+        sys.stdin = s
+        command = input()
 
-  if command == 'help':
-    if os.path.exists('help.txt'):
-      f = open(os.path.join('help.txt'), 'r')
-      help_text = f.read()
-      print(help_text)
+    if command == 'help':
+        if os.path.exists('help.txt'):
+            f = open(os.path.join('help.txt'), 'r')
+            help_text = f.read()
+            print(help_text)
+        else:
+            print(Fore.RED + Style.BRIGHT + 'help.txt does not exist.')
+    elif command == 'stage':
+        stage = input('What stage would you like to complete?: ')
+        difficulty = input('Enter the difficulty|(0:Easy, 1:Hard etc...): ')
+        loop = input('Enter how many times to execute: ')
+        for i in range(int(loop)):
+            complete_stage_command(stage, difficulty)
+    elif command == 'area':
+        area = input('Enter the area to complete: ')
+        loop = input('How many times to complete the entire area: ')
+        for i in range(int(loop)):
+            complete_area_command(area)
+    elif command == 'gift':
+        accept_gifts_command()
+        accept_missions_command()
+    elif command == 'omegafarm':
+        accept_gifts_command()
+        accept_missions_command()
+        complete_unfinished_quest_stages_command()
+        complete_unfinished_events_command()
+        complete_unfinished_zbattles_command()
+        complete_clash_command()
+    ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
+    elif command == 'quests':
+        complete_unfinished_quest_stages_command()
+    elif command == 'events':
+        complete_unfinished_events_command()
+    elif command == 'zbattles':
+        complete_unfinished_zbattles_command()
+    elif command == 'zstages':
+        complete_zbattle_stage_command()
+    elif command == 'clash':
+        complete_clash_command()
+    elif command == 'daily':
+        complete_stage_command('130001', 0)
+        complete_stage_command('131001', 0)
+        complete_stage_command('132001', 0)
+        complete_potential_command()
+        accept_gifts_command()
+        accept_missions_command()
+    elif command == 'listevents':
+        list_events_command()
+    elif command == 'chooseevents':
+        event_viewer_command()
+    elif command == 'summon':
+        summon_command()
+    elif command == 'listsummons':
+        list_summons_command()
+    elif command == 'dragonballs':
+        dragonballs_command()
+    elif command == 'info':
+        get_user_info_command()
+    elif command == 'items':
+        items_viewer_command()
+    elif command == 'medals':
+        sell_medals_command()
+    elif command == 'sell':
+        sell_cards__bulk_GUI_command()
+    elif command == 'cards':
+        list_cards_command()
+    elif command == 'supporter':
+        change_supporter_command()
+    elif command == 'team':
+        change_team_command()
+    elif command == 'deck':
+        config.deck = int(input('Enter a deck number to use: '))
+    elif command == 'transfer':
+        get_transfer_code_command()
+    elif command == 'capacity':
+        increase_capacity_command()
+    elif command == 'name':
+        change_name_command()
+    elif command == 'refresh':
+        refresh_client_command()
     else:
-      print(Fore.RED + Style.BRIGHT + 'help.txt does not exist.')
-  elif command == 'stage':
-    stage = input('What stage would you like to complete?: ')
-    difficulty = input('Enter the difficulty|(0:Easy, 1:Hard etc...): ')
-    loop = input('Enter how many times to execute: ')
-    for i in range(int(loop)):
-      complete_stage_command(stage, difficulty)
-  elif command == 'area':
-    area = input('Enter the area to complete: ')
-    loop = input('How many times to complete the entire area: ')
-    for i in range(int(loop)):
-      complete_area_command(area)
-  elif command == 'gift':
-    accept_gifts_command()
-    accept_missions_command()
-  elif command == 'omegafarm':
-    accept_gifts_command()
-    accept_missions_command()
-    complete_unfinished_quest_stages_command()
-    complete_unfinished_events_command()
-    complete_unfinished_zbattles_command()
-    complete_clash_command()
-  ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
-  elif command == 'quests':
-    complete_unfinished_quest_stages_command()
-  elif command == 'events':
-    complete_unfinished_events_command()
-  elif command == 'zbattles':
-    complete_unfinished_zbattles_command()
-  elif command == 'zstages':
-    complete_zbattle_stage_command()
-  elif command == 'clash':
-    complete_clash_command()
-  elif command == 'daily':
-    complete_stage_command('130001', 0)
-    complete_stage_command('131001', 0)
-    complete_stage_command('132001', 0)
-    complete_potential_command()
-    accept_gifts_command()
-    accept_missions_command()
-  elif command == 'listevents':
-    list_events_command()
-  elif command == 'chooseevents':
-    event_viewer_command()
-  elif command == 'summon':
-    summon_command()
-  elif command == 'listsummons':
-    list_summons_command()
-  elif command == 'dragonballs':
-    dragonballs_command()
-  elif command == 'info':
-    get_user_info_command()
-  elif command == 'items':
-    items_viewer_command()
-  elif command == 'medals':
-    sell_medals_command()
-  elif command == 'sell':
-    sell_cards__bulk_GUI_command()
-  elif command == 'cards':
-    list_cards_command()
-  elif command == 'supporter':
-    change_supporter_command()
-  elif command == 'team':
-    change_team_command()
-  elif command == 'deck':
-    config.deck = int(input('Enter a deck number to use: '))
-  elif command == 'transfer':
-    get_transfer_code_command()
-  elif command == 'capacity':
-    increase_capacity_command()
-  elif command == 'name':
-    change_name_command()
-  elif command == 'refresh':
-    refresh_client_command()
-  else:
-    print('Command not found.')
+        print('Command not found.')

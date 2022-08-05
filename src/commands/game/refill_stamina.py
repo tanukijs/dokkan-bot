@@ -7,14 +7,14 @@ from network.utils import generate_headers
 
 
 def refill_stamina_command():
-  # ## Restore user stamina
+    # ## Restore user stamina
 
-  stones = get_user_command()['user']['stone']
-  if stones < 1:
-    print(Fore.RED + Style.BRIGHT + 'You have no stones left...')
-    return 0
-  headers = generate_headers('PUT', '/user/recover_act_with_stone')
-  url = config.game_env.url + '/user/recover_act_with_stone'
+    stones = get_user_command()['user']['stone']
+    if stones < 1:
+        print(Fore.RED + Style.BRIGHT + 'You have no stones left...')
+        return 0
+    headers = generate_headers('PUT', '/user/recover_act_with_stone')
+    url = config.game_env.url + '/user/recover_act_with_stone'
 
-  r = requests.put(url, headers=headers)
-  print(Fore.GREEN + Style.BRIGHT + 'STAMINA RESTORED')
+    r = requests.put(url, headers=headers)
+    print(Fore.GREEN + Style.BRIGHT + 'STAMINA RESTORED')
