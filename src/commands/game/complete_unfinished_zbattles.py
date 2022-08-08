@@ -7,16 +7,14 @@ from colorama import Fore, Style
 import config
 import crypto
 import network
-from commands.game.refill_stamina import refill_stamina_command
+from commands.game.act import refill_stamina_command
 from commands.game.refresh_client import refresh_client_command
 
 
 def complete_unfinished_zbattles_command(kagi=False):
-    # JP Translated
     events = network.get_events()
     try:
         for event in events['z_battle_stages']:
-            config.Model.set_connection_resolver(config.game_env.db_manager)
             x = config.ZBattles.where('z_battle_stage_id', '=', event['id']).first().enemy_name
             print(config.ZBattles.where('z_battle_stage_id', '=', event['id']).first().enemy_name, end='')
             print(Fore.CYAN + Style.BRIGHT + ' | ID: ' + str(event['id']))
@@ -38,7 +36,7 @@ def complete_unfinished_zbattles_command(kagi=False):
 
             # Stop at level 30 !! This may not work for all zbattle e.g kid gohan
             while level < 31:
-                ##Get supporters
+                # Get supporters
                 r = network.get_zbattles_supporters()
                 if 'supporters' in r:
                     supporter = r['supporters'][0]['id']
@@ -50,7 +48,7 @@ def complete_unfinished_zbattles_command(kagi=False):
                     print(r)
                     return 0
 
-                ###Send first request
+                # Send first request
                 if kagi == True:
                     sign = json.dumps({
                         'friend_id': supporter,
@@ -186,56 +184,41 @@ def complete_unfinished_zbattles_command(kagi=False):
 
                     # Print items
                     for x in supportitemsset:
-                        # JP Translation
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.SupportItems.find_or_fail(x).name
-
                         # Print name and item count
                         print(Fore.CYAN + Style.BRIGHT + config.SupportItems.find(x).name + ' x' \
                               + str(supportitems.count(x)))
                     for x in awakeningitemsset:
-                        # JP Translation
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.AwakeningItems.find_or_fail(x).name
 
                         # Print name and item count
                         print(Fore.MAGENTA + Style.BRIGHT + config.AwakeningItems.find(x).name + ' x' \
                               + str(awakeningitems.count(x)))
                     for x in trainingitemsset:
-                        # JP Translation
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.TrainingItems.find_or_fail(x).name
 
                         # Print name and item count
                         print(Fore.RED + Style.BRIGHT + config.TrainingItems.find(x).name + ' x' \
                               + str(trainingitems.count(x)))
                     for x in potentialitemsset:
-                        # JP Translation
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.PotentialItems.find_or_fail(x).name
 
                         # Print name and item count
                         print(config.PotentialItems.find_or_fail(x).name + ' x' \
                               + str(potentialitems.count(x)))
                     for x in treasureitemsset:
-                        # JP Translation
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.TreasureItems.find_or_fail(x).name
 
                         # Print name and item count
                         print(Fore.GREEN + Style.BRIGHT + config.TreasureItems.find(x).name + ' x' \
                               + str(treasureitems.count(x)))
                     for x in trainingfieldsset:
-                        # JP Translation
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.TrainingFields.find_or_fail(x).name
 
                         # Print name and item count
                         print(config.TrainingFields.find(x).name + ' x' \
                               + str(trainingfields.count(x)))
                     for x in carditemsset:
-                        # JP Translation
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.Cards.find_or_fail(x).name
 
                         # Print name and item count

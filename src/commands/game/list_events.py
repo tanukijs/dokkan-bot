@@ -6,7 +6,6 @@ import network
 
 def list_events_command():
     # Prints all currently available events
-    # JP Translated
     events = network.get_events()
 
     area_id = None
@@ -14,7 +13,6 @@ def list_events_command():
         for quest in event['quests']:
             if str(event['id']) != area_id:
                 area_id = str(event['id'])
-                config.Model.set_connection_resolver(config.game_env.db_manager)
                 area_name = str(config.Area.where('id', '=', area_id).first().name)
                 print('--------------------------------------------')
                 print(Back.BLUE + Fore.WHITE + Style.BRIGHT \
@@ -22,7 +20,6 @@ def list_events_command():
                 print('--------------------------------------------')
 
             ids = quest['id']
-            config.Model.set_connection_resolver(config.game_env.db_manager)
             sugorokus = config.Sugoroku.where('quest_id', '=', int(ids)).get()
             if len(sugorokus) < 1:
                 sugorokus = config.Sugoroku.where('quest_id', '=', int(ids)).get()

@@ -1,7 +1,11 @@
 import json
+import urllib.parse
 from typing import Optional, Any
 
 import requests
+import simplejson.errors
+from colorama import Fore
+from requests import Response
 
 import config
 import crypto
@@ -30,25 +34,55 @@ def __generate_headers(
     }
 
 
+def __purge_none(data: Optional[dict] = None) -> Optional[dict]:
+    if data is None: return data
+    _copy = data.copy()
+
+    for key in data:
+        if type(data[key]) is dict:
+            _copy[key] = __purge_none(_copy[key])
+        if _copy[key] is None:
+            _copy.pop(key)
+
+    return _copy if len(_copy) > 0 else None
+
+
+def __print_response(res: Response):
+    status_color = Fore.RED
+    if 100 <= res.status_code <= 199: status_color = Fore.BLUE
+    elif 200 <= res.status_code <= 299: status_color = Fore.GREEN
+    elif 300 <= res.status_code <= 399: status_color = Fore.YELLOW
+    print('[' + status_color + str(res.status_code) + Fore.RESET + '] ' + res.request.method + ' ' + Fore.GREEN + res.url + Fore.RESET + ' (' + res.text + ')')
+
+
 def __get(endpoint: str, params: Optional[Any] = None):
-    headers = __generate_headers('GET', endpoint)
+    params = __purge_none(params)
+    if params is not None:
+        endpoint = endpoint + '?' + urllib.parse.urlencode(params)
+
     url = config.game_env.url + endpoint
-    req = requests.get(url, headers=headers, params=params)
-    return req.json()
+    headers = __generate_headers('GET', endpoint)
+    res = requests.get(url, headers=headers)
+    __print_response(res)
+    return res.json() if res.status_code != 204 else None
 
 
 def __put(endpoint: str, data: Optional[dict[str, Any]] = None):
     headers = __generate_headers('PUT', endpoint)
     url = config.game_env.url + endpoint
-    req = requests.put(url, headers=headers, data=json.dumps(data) if data is not None else None)
-    return req.json()
+    data = __purge_none(data)
+    res = requests.put(url, headers=headers, data=json.dumps(data) if data is not None else None)
+    __print_response(res)
+    return res.json() if res.status_code != 204 else None
 
 
 def __post(endpoint: str, data: Optional[dict[str, Any]] = None):
     headers = __generate_headers('POST', endpoint)
     url = config.game_env.url + endpoint
-    req = requests.post(url, headers=headers, data=json.dumps(data) if data is not None else None)
-    return req.json()
+    data = __purge_none(data)
+    res = requests.post(url, headers=headers, data=json.dumps(data) if data is not None else None)
+    __print_response(res)
+    return res.json() if res.status_code != 204 else None
 
 
 def get_user():
@@ -112,28 +146,36 @@ def get_resources_home(
     banners: bool = False,
     bonus_schedules: bool = False,
     budokai: bool = False,
-    comeback_campaignss: bool = False,
+    dragonball_sets: bool = False,
     gifts: bool = False,
     login_bonuses: bool = False,
-    rmbattles: bool = False
+    missions: bool = False,
+    random_login_bonuses: bool = False,
+    rmbattles: bool = False,
+    user_subscription: bool = False,
+    comeback_campaigns: bool = False,
 ): return __get('/resources/home', {
     'apologies': str(apologies).lower(),
     'banners': str(banners).lower(),
     'bonus_schedules': str(bonus_schedules).lower(),
     'budokai': str(budokai).lower(),
-    'comeback_campaignss': str(comeback_campaignss).lower(),
+    'dragonball_sets': str(dragonball_sets).lower(),
     'gifts': str(gifts).lower(),
     'login_bonuses': str(login_bonuses).lower(),
-    'rmbattles': str(rmbattles).lower()
+    'missions': str(missions).lower(),
+    'random_login_bonuses': str(random_login_bonuses).lower(),
+    'rmbattles': str(rmbattles).lower(),
+    'user_subscription': str(user_subscription).lower(),
+    'comeback_campaigns': str(comeback_campaigns).lower(),
 })
 
 
 def get_resources_login(
-    potential_items: bool = False,
-    training_items: bool = False,
-    support_items: bool = False,
-    treasure_items: bool = False,
-    special_items: bool = False
+        potential_items: bool = False,
+        training_items: bool = False,
+        support_items: bool = False,
+        treasure_items: bool = False,
+        special_items: bool = False
 ): return __get('/resources/login', {
     'potential_items': str(potential_items).lower(),
     'training_items': str(training_items).lower(),
@@ -143,8 +185,9 @@ def get_resources_login(
 })
 
 
-def get_quests_supporters(stage_id: str):
-    return __get('/quests/' + stage_id + '/supporters')
+def get_quests_supporters(stage_id: str, difficulty: int, team_num: int):
+    params = {'difficulty': difficulty, 'team_num': team_num}
+    return __get('/quests/' + stage_id + '/supporters', params=params)
 
 
 def get_rmbattles(clash_id: str):
@@ -164,8 +207,8 @@ def get_zbattles_supporters(stage_id: str):
 
 
 def put_user(
-    name: Optional[str] = None,
-    is_ondemand: Optional[bool] = None
+        name: Optional[str] = None,
+        is_ondemand: Optional[bool] = None
 ): return __put('/user', {
     'user': {
         'name': name,
@@ -194,12 +237,85 @@ def put_tutorial_finish():
     return __put('/tutorial/finish')
 
 
-def put_tutorial(progress: str):
+def put_tutorial(progress: int):
     return __put('/tutorial', {'progress': progress})
 
 
 def put_apologies_accept():
     return __put('/apologies/accept')
+
+
+def post_auth_signup(
+        unique_id: str,
+        captcha_session_key: Optional[str] = None
+):
+    headers = {
+        'User-Agent': config.game_platform.user_agent,
+        'Accept': '*/*',
+        'Content-type': 'application/json',
+        'X-Platform': config.game_platform.name,
+        'X-ClientVersion': config.game_env.version_code,
+    }
+
+    data = __purge_none({
+        'bundle_id': config.game_env.bundle_id,
+        'device_token': 'failed' if captcha_session_key is None else None,
+        'reason': 'NETWORK_ERROR: null' if captcha_session_key is None else None,
+        'captcha_session_key': captcha_session_key,
+        'user_account': {
+            'ad_id': '',
+            'unique_id': unique_id,
+            'country': config.game_env.country,
+            'currency': config.game_env.currency,
+            'device': config.game_platform.device_name,
+            'device_model': config.game_platform.device_model,
+            'os_version': config.game_platform.os_version,
+            'platform': config.game_platform.name
+        }
+    })
+
+    url = config.game_env.url + '/auth/sign_up'
+    res = requests.post(url, headers=headers, data=json.dumps(data))
+    __print_response(res)
+    return res.json()
+
+
+def post_auth_signin(
+        authorization: str,
+        unique_id: str,
+        captcha_session_key: Optional[str] = None
+):
+    data = json.dumps(__purge_none({
+        'bundle_id': config.game_env.bundle_id,
+        'device_token': 'failed' if captcha_session_key is None else None,
+        'reason': 'NETWORK_ERROR: null' if captcha_session_key is None else None,
+        'captcha_session_key': captcha_session_key,
+        'user_account': {
+            'ad_id': '',
+            'device': config.game_platform.device_name,
+            'device_model': config.game_platform.device_model,
+            'os_version': config.game_platform.os_version,
+            'platform': config.game_platform.name,
+            'unique_id': unique_id,
+        }
+    }))
+
+    headers = __purge_none({
+        'User-Agent': config.game_platform.user_agent,
+        'Accept': '*/*',
+        'Authorization': authorization,
+        'Content-type': 'application/json',
+        'X-ClientVersion': config.game_env.version_code,
+        'X-Language': 'en',
+        'X-UserCountry': config.game_env.country,
+        'X-UserCurrency': config.game_env.currency,
+        'X-Platform': config.game_platform.name,
+    })
+
+    url = config.game_env.url + '/auth/sign_in'
+    res = requests.post(url, headers=headers, data=data)
+    __print_response(res)
+    return res.json()
 
 
 def post_login_bonuses_accept():
@@ -215,8 +331,8 @@ def post_missions_accept(mission_ids: list):
 
 
 def post_teams(
-    selected_team_num: int,
-    user_card_teams: list
+        selected_team_num: int,
+        user_card_teams: list
 ): return __post('/teams', {
     'selected_team_num': selected_team_num,
     'user_card_teams': user_card_teams
@@ -224,12 +340,12 @@ def post_teams(
 
 
 def post_rmbattles_start(
-    clash_id: str,
-    stage_id: str,
-    is_beginning: bool,
-    leader: Any,
-    members: list[Any],
-    sub_leader: Any
+        clash_id: str,
+        stage_id: str,
+        is_beginning: bool,
+        leader: Any,
+        members: list[Any],
+        sub_leader: Any
 ): return __post('/rmbattles/' + clash_id + '/stages/' + stage_id + '/start', {
     'is_beginning': is_beginning,
     'user_card_ids': {
@@ -245,15 +361,15 @@ def post_rmbattles_dropout(clash_id: str):
 
 
 def post_rmbattles_finish(
-    clash_id: str,
-    damage: int,
-    finished_at_ms: int,
-    finished_reason: str,
-    is_cleared: bool,
-    remaining_hp: int,
-    round: int,
-    started_at_ms: int,
-    token: str
+        clash_id: str,
+        damage: int,
+        finished_at_ms: int,
+        finished_reason: str,
+        is_cleared: bool,
+        remaining_hp: int,
+        round: int,
+        started_at_ms: int,
+        token: str
 ): __post('/rmbattles/' + clash_id + '/stages/finish', {
     'damage': damage,
     'finished_at_ms': finished_at_ms,
@@ -285,17 +401,17 @@ def post_zbattles_start(stage_id: str, sign: str):
 
 
 def post_zbattles_finish(
-    stage_id: str,
-    elapsed_time: int,
-    is_cleared: bool,
-    level: int,
-    s: str,
-    t: str,
-    token: str,
-    used_items: list,
-    z_battle_finished_at_ms: int,
-    z_battle_started_at_ms: int,
-    reason: Optional[str]
+        stage_id: str,
+        elapsed_time: int,
+        is_cleared: bool,
+        level: int,
+        s: str,
+        t: str,
+        token: str,
+        used_items: list,
+        z_battle_finished_at_ms: int,
+        z_battle_started_at_ms: int,
+        reason: Optional[str]
 ):
     return __post('/z_battles/' + stage_id + '/finish', {
         'elapsed_time': elapsed_time,
@@ -334,8 +450,8 @@ def post_gashas_draw(summon_id: str, type: str):
     return __post('/gashas/' + summon_id + '/courses/' + type + '/draw')
 
 
-def post_tutorial_gasha():
-    return __post('/tutorial/gasha')
+def post_tutorial_gasha(progress: int):
+    return __post('/tutorial/gasha', {'progress': progress})
 
 
 def post_missions_put_forward():

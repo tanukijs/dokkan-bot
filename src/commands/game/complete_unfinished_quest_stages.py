@@ -1,5 +1,5 @@
 import network
-from commands.game.complete_stage import complete_stage_command
+from commands.game.stage import complete_stage_command
 from commands.game.refresh_client import refresh_client_command
 
 
@@ -9,7 +9,6 @@ def complete_unfinished_quest_stages_command():
     # type: (object, object) -> object
 
     r = network.get_user_areas()
-
 
     maps = []
     for user in r:

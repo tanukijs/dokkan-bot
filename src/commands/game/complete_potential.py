@@ -1,6 +1,6 @@
 import config
 import network
-from commands.game.complete_stage import complete_stage_command
+from commands.game.stage import complete_stage_command
 
 
 def complete_potential_command():

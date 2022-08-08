@@ -36,7 +36,6 @@ def summon_command():
                         return 0
                     card_list = []
                     for card in r['gasha_items']:
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.Cards.find_or_fail(int(card['item_id'])).rarity
 
                         if config.Cards.find(int(card['item_id'])).rarity == 0:
@@ -78,7 +77,6 @@ def summon_command():
                         return 0
                     card_list = []
                     for card in r['gasha_items']:
-                        config.Model.set_connection_resolver(config.game_env.db_manager)
                         config.Cards.find_or_fail(int(card['item_id'])).rarity
 
                         if config.Cards.find(int(card['item_id'])).rarity == 0:

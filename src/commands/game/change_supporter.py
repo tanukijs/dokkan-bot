@@ -18,7 +18,6 @@ def change_supporter_command():
     card_list = []
     for card in master_cards:
         ###Get card collection object from database
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         db_card = config.Cards.find_or_fail(card['card_id'])
         # db_card = config.Cards.where('id','=',card['card_id']).first()
 
@@ -54,14 +53,12 @@ def change_supporter_command():
 
         try:
             for category in card_card_categories:
-                config.Model.set_connection_resolver(config.game_env.db_manager)
                 categories.append(config.CardCategories.find(
                     category.card_category_id).name)
         except:
             None
         ###Get card link_skills list
         link_skills = []
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         link_skills.append(config.LinkSkills.find(db_card.link_skill1_id).name)
         link_skills.append(config.LinkSkills.find(db_card.link_skill2_id).name)
         link_skills.append(config.LinkSkills.find(db_card.link_skill3_id).name)
@@ -111,7 +108,6 @@ def change_supporter_command():
     ###Define categories to display
     categories_master = []
     for category in config.CardCategories.all():
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         categories_master.append(config.CardCategories.find_or_fail(category.id).name)
 
     categories_to_display = sorted(categories_master)
@@ -159,7 +155,6 @@ def change_supporter_command():
             char_name, char_id, char_unique_id = chosen_line.split(' | ')
             chosen_cards_ids.append(int(char_id))
             chosen_cards_unique_ids.append(int(char_unique_id))
-            config.Model.set_connection_resolver(config.game_env.db_manager)
             chosen_cards_names.append(config.Cards.find(char_id).name)
 
             # Chosen cards to display in lower box

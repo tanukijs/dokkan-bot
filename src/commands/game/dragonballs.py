@@ -1,7 +1,7 @@
 from colorama import Fore, Style
 
 import network
-from commands.game.complete_stage import complete_stage_command
+from commands.game.stage import complete_stage_command
 
 
 def dragonballs_command():

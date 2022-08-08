@@ -1,6 +1,6 @@
 import config
 
-from commands.game.complete_stage import complete_stage_command
+from commands.game.stage import complete_stage_command
 
 
 def complete_area_command(area_id):

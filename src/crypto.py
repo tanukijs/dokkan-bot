@@ -19,23 +19,18 @@ import config
 # related to encryption itself.
 
 BLOCK_SIZE = 16  # Bytes
-pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE
-                                                             - len(s) % BLOCK_SIZE)
+pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
 unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
 
-def guid():
-    # Generates UniqueID & AdIDcompatible with Bandais servers
-    # Returns dict
-    UUID = str(uuid.uuid4())
-    UniqueId = str(uuid.uuid4()) + ':' + UUID[0:8]
-    return dict(AdId=str(uuid.uuid4()), UniqueId=UniqueId)
+def generate_unique_id() -> str:
+    rnd_uuid = str(uuid.uuid4())
+    rnd_unique_id = str(uuid.uuid4()) + ':' + rnd_uuid[0:8]
+    return rnd_unique_id
 
 
 # thanks to renzy for assisting on how the identifier & Basic works so that i could write this. - k1mpl0s
 def basic(identifier):
-    # check if from other bots
-    print(identifier)
     if ':' not in identifier:
         # remove next-lines
         if '\n' in identifier:
@@ -55,8 +50,7 @@ def basic(identifier):
         part = identifier.split(':')
         temp = part[1] + ':' + part[0]
     # basic
-    basic = base64.b64encode(temp.encode()).decode()
-    return basic
+    return base64.b64encode(temp.encode()).decode()
 
 
 def mac(method, action):
@@ -76,11 +70,11 @@ def mac(method, action):
 
 
 def get_key_and_iv(
-        password,
-        salt,
-        klen=32,
-        ilen=16,
-        msgdgst='md5',
+    password,
+    salt,
+    klen=32,
+    ilen=16,
+    msgdgst='md5',
 ):
     '''
     Derive the key and the IV from the given password and salt.
@@ -122,11 +116,9 @@ def get_key_and_iv(
 def encrypt_sign(data):
     data = pad(data)
     key1 = str.encode(data)
-    password = \
-        'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzJ9JaHioVi6rr0TAfr6j'
+    password = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzJ9JaHioVi6rr0TAfr6j'
     salt = os.urandom(8)
-    (key, iv) = get_key_and_iv(password, salt, klen=32, ilen=16,
-                               msgdgst='md5')
+    (key, iv) = get_key_and_iv(password, salt, klen=32, ilen=16, msgdgst='md5')
     cipher = AES.new(key, AES.MODE_CBC, iv)
     a = cipher.encrypt(key1)
     a = salt + a
@@ -136,11 +128,9 @@ def encrypt_sign(data):
 def decrypt_sign(sign):
     buffer = base64.b64decode(sign)
     buffer_encoded = base64.b64encode(buffer)
-    password = \
-        'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzJ9JaHioVi6rr0TAfr6j'
+    password = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzJ9JaHioVi6rr0TAfr6j'
     salt = buffer[0:8]
-    (key, iv) = get_key_and_iv(password, salt, klen=32, ilen=16,
-                               msgdgst='md5')
+    (key, iv) = get_key_and_iv(password, salt, klen=32, ilen=16, msgdgst='md5')
     data = buffer[8:len(buffer)]
     cipher = AES.new(key, AES.MODE_CBC, iv)
     a = unpad(cipher.decrypt(data)).decode('utf8')

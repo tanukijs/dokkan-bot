@@ -23,7 +23,6 @@ def sell_cards__bulk_GUI_command():
         if card['is_favorite'] == True:
             continue
 
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         # Quick and dirty way to exclude elder kais from sell
         hp_max = config.Cards.find_or_fail(card['card_id']).hp_max
         if hp_max == 1:

@@ -39,7 +39,6 @@ def items_viewer_command():
                 print('##########################')
                 window.Refresh()
                 for item in r['support_items']['items']:
-                    config.Model.set_connection_resolver(config.game_env.db_manager)
                     print(
                         str(config.SupportItems.find_or_fail(item['item_id']).name) + ' x' + str(item['quantity']))
                 window.Refresh()
@@ -49,7 +48,6 @@ def items_viewer_command():
                 print('##########################')
                 window.Refresh()
                 for item in r['training_items']:
-                    config.Model.set_connection_resolver(config.game_env.db_manager)
                     print(str(config.TrainingItems.find(item['training_item_id']).name) + ' x' + str(
                         item['quantity']))
                 window.Refresh()
@@ -69,7 +67,6 @@ def items_viewer_command():
                 print('##########################')
                 window.Refresh()
                 for item in r['treasure_items']['user_treasure_items']:
-                    config.Model.set_connection_resolver(config.game_env.db_manager)
                     print(str(config.TreasureItems.find(item['treasure_item_id']).name) + ' x' + str(
                         item['quantity']))
                 window.Refresh()
@@ -79,7 +76,6 @@ def items_viewer_command():
                 print('##########################')
                 window.Refresh()
                 for item in r['special_items']:
-                    config.Model.set_connection_resolver(config.game_env.db_manager)
                     print(
                         str(config.SpecialItems.find(item['special_item_id']).name) + ' x' + str(item['quantity']))
                 window.Refresh()

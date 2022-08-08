@@ -5,24 +5,24 @@ import sys
 from colorama import Fore, Style
 
 import config
-from commands.game.accept_gifts import accept_gifts_command
-from commands.game.accept_missions import accept_missions_command
-from commands.game.change_name import change_name_command
+from commands.game.gifts import accept_gifts_command
+from commands.game.missions import accept_missions_command
+from commands.game.rename import change_name_command
 from commands.game.change_supporter import change_supporter_command
 from commands.game.change_team import change_team_command
 from commands.game.complete_area import complete_area_command
 from commands.game.complete_clash import complete_clash_command
 from commands.game.complete_potential import complete_potential_command
-from commands.game.complete_stage import complete_stage_command
+from commands.game.stage import complete_stage_command
 from commands.game.complete_unfinished_events import complete_unfinished_events_command
 from commands.game.complete_unfinished_quest_stages import complete_unfinished_quest_stages_command
 from commands.game.complete_unfinished_zbattles import complete_unfinished_zbattles_command
 from commands.game.complete_zbattle_stage import complete_zbattle_stage_command
 from commands.game.dragonballs import dragonballs_command
 from commands.game.event_viewer import event_viewer_command
-from commands.game.get_transfer_code import get_transfer_code_command
+from commands.get_transfer_code import get_transfer_code_command
 from commands.game.get_user_info import get_user_info_command
-from commands.game.increase_capacity import increase_capacity_command
+from commands.game.card_capacity import increase_capacity_command
 from commands.game.items_viewer import items_viewer_command
 from commands.game.list_cards import list_cards_command
 from commands.game.list_events import list_events_command

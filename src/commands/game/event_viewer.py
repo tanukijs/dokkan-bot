@@ -2,12 +2,11 @@ import PySimpleGUI as sg
 
 import config
 import network
-from commands.game.complete_stage import complete_stage_command
+from commands.game.stage import complete_stage_command
 
 
 def event_viewer_command():
     # Event GUI with options to complete stage.
-    # JP Translation needs work
     events = network.get_events()
 
     # Build areas list
@@ -17,7 +16,6 @@ def event_viewer_command():
 
     for event in events['events']:
         area_id = str(event['id'])
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         area_name = area_id + ' | ' + str(config.Area.where('id', '=', area_id).first().name)
         areas_to_display.append(area_name)
         stage_ids[:] = []
@@ -51,7 +49,6 @@ def event_viewer_command():
             area_id = values['AREAS'][0].split(' | ')[0]
 
             for stage_id in areas[area_id]:
-                config.Model.set_connection_resolver(config.game_env.db_manager)
                 stage_name = config.Quests.find_or_fail(stage_id).name
                 stages_to_display.append(stage_name + ' | ' + str(stage_id))
 

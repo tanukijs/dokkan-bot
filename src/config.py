@@ -31,20 +31,26 @@ IOS_PLATFORM = GamePlatform(
 
 GB_ENV = GameEnvironment(
     name='global',
+    bundle_id='com.bandainamcogames.dbzdokkanww',
     url='https://ishin-global.aktsk.com',
     port=443,
     version_code='5.4.0-c836f25f0997f70e1f5210864a41e078b021034d6a7554e6f70e70e527d82aee',
     db_password=bytearray('9bf9c6ed9d537c399a6c4513e92ab24717e1a488381e3338593abd923fc8a13b'.encode('utf8')),
-    db_path=Path('data/gb.db')
+    db_path=Path('data/gb.db'),
+    country='AU',
+    currency='AUD'
 )
 
 JP_ENV = GameEnvironment(
     name='japan',
+    bundle_id='',
     url='https://ishin-production.aktsk.jp',
     port=443,
     version_code='5.5.1-3dce6ea90bfc690de24bd70fbea42ab4310129aa36cad35dfbbe2fcb096f8711',
     db_password=bytearray('2db857e837e0a81706e86ea66e2d1633'.encode('utf8')),
-    db_path=Path('data/jp.db')
+    db_path=Path('data/jp.db'),
+    country='AU',
+    currency='AUD'
 )
 
 client: ClientConfig = ClientConfig(path=Path('./config.json'))

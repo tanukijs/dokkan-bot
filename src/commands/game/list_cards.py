@@ -8,7 +8,6 @@ def list_cards_command():
     r = network.get_cards()
     cards = {}
     for card in r['cards']:
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         name = config.Cards.find_or_fail(card['card_id']).name
         element = str(config.Cards.find_or_fail(card['card_id']).element)
 
@@ -23,7 +22,6 @@ def list_cards_command():
         elif element[-1] == '4':
             element = 'PHY'
 
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         cost = config.Cards.find_or_fail(card['card_id']).cost
         leader_skill_id = config.Cards.find_or_fail(card['card_id']).leader_skill_id
         passive_skill_id = config.Cards.find_or_fail(card['card_id']).passive_skill_set_id
@@ -104,7 +102,6 @@ def list_cards_command():
                 colour = 'black'
 
             # Retrieve leaderskill from DB
-            config.Model.set_connection_resolver(config.game_env.db_manager)
             leader_skill_name = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).name.replace(
                 '\n', ' ')
             leader_skill_desc = config.LeaderSkills.find_or_fail(
@@ -115,7 +112,6 @@ def list_cards_command():
                 passive_skill_name = 'None'
                 passive_skill_desc = 'None'
             else:
-                config.Model.set_connection_resolver(config.game_env.db_manager)
                 passive_skill_name = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).name.replace(
                     '\n', ' ')
                 passive_skill_desc = config.Passives.find_or_fail(
@@ -130,7 +126,6 @@ def list_cards_command():
             ls6 = None
             ls7 = None
 
-            config.Model.set_connection_resolver(config.game_env.db_manager)
             if config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]) != None:
                 ls1 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]).name.replace('\n', ' ')
             if config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]) != None:

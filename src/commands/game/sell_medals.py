@@ -7,13 +7,11 @@ import network
 
 def sell_medals_command():
     # Get Medals
-    config.Model.set_connection_resolver(config.game_env.db_manager)
     r = network.get_awakening_items()
 
     # Create list with ID for listbox
     medal_list = []
     for medal in reversed(r['awakening_items']):
-        config.Model.set_connection_resolver(config.game_env.db_manager)
         item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
 
         medal_list.append(item.name + ' [x' + str(medal['quantity']) + '] | ' + str(item.id))
@@ -67,7 +65,6 @@ def sell_medals_command():
 
             medal_list[:] = []
             for medal in reversed(r['awakening_items']):
-                config.Model.set_connection_resolver(config.game_env.db_manager)
                 item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
 
                 medal_list.append(item.name + ' [x' + str(medal['quantity']) + ']' + ' | ' + str(item.id))
