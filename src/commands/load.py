@@ -23,6 +23,7 @@ def run(file_name: str):
 
     config.game_account = GameAccount.from_file(file_path)
     config.game_account = AccountService.login(config.game_account)
+    print(Fore.GREEN + 'Welcome back' + Style.RESET_ALL)
     config.game_account.to_file(file_path)
     config.game_context = config.GameContext.GAME
 

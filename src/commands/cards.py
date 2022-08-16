@@ -17,4 +17,4 @@ def run():
         card_name = db_card.name
         card_element = int(str(db_card.element)[-1])
         card_type = _CARD_TYPES[card_element]
-        print(card_id, card['id'], '★' if card['is_favorite'] else '', '[' + card_type + ']', card_name)
+        print('★' if card['is_favorite'] else '', card_id, card['id'], '[' + card_type + ']', card_name)

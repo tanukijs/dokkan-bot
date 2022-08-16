@@ -29,3 +29,19 @@ def run():
     while True:
         user_input = input(Fore.YELLOW + '777 $ ' + Fore.RESET).strip()
         execute(user_input)
+
+# OMEGA Command
+#   accept_gifts_command()
+#   accept_missions_command()
+#   complete_unfinished_quest_stages_command()
+#   complete_unfinished_events_command()
+#   complete_unfinished_zbattles_command()
+#   complete_clash_command()
+
+# Daily Command
+#   complete_stage_command('130001', 0)
+#   complete_stage_command('131001', 0)
+#   complete_stage_command('132001', 0)
+#   complete_potential_command()
+#   accept_gifts_command()
+#   accept_missions_command()

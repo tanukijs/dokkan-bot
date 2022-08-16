@@ -30,5 +30,4 @@ class AccountService:
 
         account.access_token = req['access_token']
         account.secret = req['secret']
-        print(Fore.RED + Style.BRIGHT + 'SIGN IN COMPLETE' + Style.RESET_ALL)
         return account
