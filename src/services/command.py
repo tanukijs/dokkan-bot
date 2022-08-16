@@ -14,7 +14,17 @@ class CommandService:
     @staticmethod
     def load():
         modules = pkgutil.iter_modules(commands.__path__, commands.__name__ + '.')
+        loaded_modules = {
+            CommandService.__commands[command_name].__name__: command_name
+            for command_name in CommandService.__commands
+        }
+
         for module in modules:
+            if module.name in loaded_modules:
+                command_name = loaded_modules[module.name]
+                importlib.reload(CommandService.__commands[command_name])
+                continue
+
             try:
                 command = importlib.import_module(module.name)
                 is_valid = CommandService.is_valid(command)
@@ -22,6 +32,8 @@ class CommandService:
                 CommandService.__commands[command.NAME] = command
             except ImportError as e:
                 print(f'[{Fore.RED}ImportError{Fore.RESET}] {e}')
+
+        print(f'[{Fore.GREEN}Commands{Fore.RESET}] {len(CommandService.__commands)} commands loaded')
 
     @staticmethod
     def is_valid(module: ModuleType) -> bool:
