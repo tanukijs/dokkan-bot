@@ -35,7 +35,6 @@ def check_servers(env: GameEnvironment):
 if check_servers(config.game_env):
     cli.run()
 else:
-    # we can't use the farmbot period if there's no URL to make requests to...
     print(Fore.RED + 'press ENTER to close...')
     input()
     exit()

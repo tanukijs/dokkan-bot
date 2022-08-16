@@ -3,10 +3,10 @@ import sys
 
 import config
 from classes.Game import GameAccount
-from commands.game.gifts import accept_gifts_command
-from commands.game.missions import accept_missions_command
-from commands.game.complete_potential import complete_potential_command
-from commands.game.stage import complete_stage_command
+from commands.gifts import accept_gifts_command
+from commands.missions import accept_missions_command
+from commands.potential import complete_potential_command
+from commands.stage import complete_stage_command
 from commands.game.daily_login import daily_login_command
 from commands.game.refresh_client import refresh_client_command
 from user_command_executor import user_command_executor_command

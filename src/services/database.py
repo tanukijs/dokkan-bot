@@ -1,3 +1,4 @@
+import os
 from random import randint
 
 import requests
@@ -20,12 +21,13 @@ class DatabaseService:
 
         print(Fore.RED + Style.BRIGHT + 'Downloading latest global database...')
         res = requests.get(res['url'], allow_redirects=True)
-        temp_db_name = str(randint(10_000_00, 99_999_99)) + '.db'
+        config.game_env.db_path.parent.mkdir(exist_ok=True, parents=True)
+        temp_db_name = str(config.game_env.db_path.parent.absolute()) + str(randint(10_000_00, 99_999_99)) + '.db'
         open(temp_db_name, 'wb').write(res.content)
 
         print(Fore.RED + Style.BRIGHT + 'Decrypting latests database... This can take a few minutes...')
-        config.game_env.db_path.parent.mkdir(exist_ok=True, parents=True)
         decrypt_file(temp_db_name, config.game_env.db_password, str(config.game_env.db_path.absolute()))
         config.client.gb_db_version = dist_db_version
         config.client.save()
+        os.remove(temp_db_name)
         print(Fore.GREEN + Style.BRIGHT + 'Database update complete.')

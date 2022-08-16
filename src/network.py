@@ -52,7 +52,12 @@ def __print_response(res: Response):
     if 100 <= res.status_code <= 199: status_color = Fore.BLUE
     elif 200 <= res.status_code <= 299: status_color = Fore.GREEN
     elif 300 <= res.status_code <= 399: status_color = Fore.YELLOW
-    print('[' + status_color + str(res.status_code) + Fore.RESET + '] ' + res.request.method + ' ' + Fore.GREEN + res.url + Fore.RESET + ' (' + res.text + ')')
+    show_content = False
+    status_code = '[' + status_color + str(res.status_code) + Fore.RESET + ']'
+    url = Fore.GREEN + res.url + Fore.RESET
+
+    print(status_code + ' ' + res.request.method + ' ' + url)
+    if show_content: print(res.text)
 
 
 def __get(endpoint: str, params: Optional[Any] = None):
@@ -185,9 +190,9 @@ def get_resources_login(
 })
 
 
-def get_quests_supporters(stage_id: str, difficulty: int, team_num: int):
+def get_quests_supporters(stage_id: int, difficulty: int, team_num: int):
     params = {'difficulty': difficulty, 'team_num': team_num}
-    return __get('/quests/' + stage_id + '/supporters', params=params)
+    return __get('/quests/' + str(stage_id) + '/supporters', params=params)
 
 
 def get_rmbattles(clash_id: str):
@@ -382,14 +387,14 @@ def post_rmbattles_finish(
 })
 
 
-def post_quests_sugoroku_start(stage_id: str, sign: str):
-    return __post('/quests/' + stage_id + '/sugoroku_maps/start', {
+def post_quests_sugoroku_start(stage_id: int, sign: str):
+    return __post('/quests/' + str(stage_id) + '/sugoroku_maps/start', {
         'sign': sign
     })
 
 
-def post_quests_sugoroku_finish(stage_id: str, sign: str):
-    return __post('/quests/' + stage_id + '/sugoroku_maps/finish', {
+def post_quests_sugoroku_finish(stage_id: int, sign: str):
+    return __post('/quests/' + str(stage_id) + '/sugoroku_maps/finish', {
         'sign': sign
     })
 
