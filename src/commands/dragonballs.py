@@ -1,10 +1,15 @@
 from colorama import Fore, Style
 
+import config
 import network
-from commands.stage import complete_stage_command
+from commands import stage
+
+NAME = 'dragonballs'
+DESCRIPTION = 'Shenron & wishes'
+CONTEXT = [config.GameContext.GAME]
 
 
-def dragonballs_command():
+def run():
     is_got = 0
     ###Check for Dragonballs
     r = network.get_dragonball_sets()
@@ -22,7 +27,7 @@ def dragonballs_command():
                 is_got += 1
             elif db['is_got'] == False:
                 is_got += 1
-                complete_stage_command(str(db['quest_id']), db['difficulties'][0])
+                stage.run(str(db['quest_id']), db['difficulties'][0])
 
     ### If all dragonballs found then wish
     if is_got == 7:
@@ -52,7 +57,3 @@ def dragonballs_command():
         else:
             print(Fore.YELLOW + 'Wish granted!')
             print('')
-
-        dragonballs_command()
-
-        return 0
