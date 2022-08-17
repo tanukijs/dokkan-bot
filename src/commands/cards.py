@@ -1,4 +1,7 @@
+from typing import Optional
+
 import config
+import models.game
 import network
 
 NAME = 'cards'
@@ -13,7 +16,7 @@ def run():
 
     for card in res['cards']:
         card_id = card['card_id']
-        db_card = config.Cards.find(card_id)
+        db_card: Optional[models.game.Cards] = models.game.Cards.get_by_id(card_id)
         card_name = db_card.name
         card_element = int(str(db_card.element)[-1])
         card_type = _CARD_TYPES[card_element]

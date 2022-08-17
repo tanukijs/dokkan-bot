@@ -1,6 +1,7 @@
+from commands.game.refresh_client import refresh_client_command
+
 import network
 from commands.stage import complete_stage_command
-from commands.game.refresh_client import refresh_client_command
 
 
 # noinspection SyntaxError

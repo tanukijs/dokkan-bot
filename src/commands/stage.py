@@ -7,6 +7,7 @@ from colorama import Fore, Style
 
 import config
 import crypto
+import models.game
 import network
 from commands import act
 from services.stage import StageService
@@ -18,8 +19,9 @@ CONTEXT = [config.GameContext.GAME]
 
 def run(stage_id: int, difficulty: int, kagi: Optional[int] = None):
     try:
-        stage = config.Quests.find_or_fail(stage_id)
-    except:
+        stage: Optional[models.game.Quests] = models.game.Quests.get_by_id(stage_id)
+    except Exception as error:
+        print(error)
         print('Does this quest exist ?')
         return
 

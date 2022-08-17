@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
-from orator import DatabaseManager
+from peewee import SqliteDatabase
 
 import config
 
@@ -42,12 +42,7 @@ class GameEnvironment:
         self.version_code = version_code
         self.db_path = db_path
         self.db_password = db_password
-        self.db_manager = DatabaseManager({
-            'mysql': {
-                'driver': 'sqlite',
-                'database': db_path
-            }
-        })
+        self.db = SqliteDatabase(db_path)
         self.country = country
         self.currency = currency
         self.bundle_id = bundle_id

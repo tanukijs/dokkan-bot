@@ -1,5 +1,6 @@
-from colorama import Fore
 from inspect import getfullargspec
+
+from colorama import Fore
 
 import config
 from services.command import CommandService

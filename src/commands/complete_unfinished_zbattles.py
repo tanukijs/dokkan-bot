@@ -3,12 +3,12 @@ import time
 from random import randint
 
 from colorama import Fore, Style
+from commands.game.refresh_client import refresh_client_command
 
 import config
 import crypto
 import network
 from commands.act import refill_stamina_command
-from commands.game.refresh_client import refresh_client_command
 
 
 def complete_unfinished_zbattles_command(kagi=False):

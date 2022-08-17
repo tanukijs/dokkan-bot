@@ -1,7 +1,7 @@
 from colorama import Fore
 
-import config
 import commands
+import config
 from services.command import CommandService
 
 
@@ -17,8 +17,10 @@ def execute(user_input: str):
             command.run(*command_args)
             break
         except TypeError as error:
-            print('invalid command arguments')
+            print('invalid command arguments: ', command_args)
             print(error)
+        except Exception as error:
+            print('command error', error)
 
 
 def run():

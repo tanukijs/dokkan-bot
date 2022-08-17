@@ -1,11 +1,11 @@
 import importlib
+import pkgutil
 from inspect import getmembers
 from types import ModuleType
 
 from colorama import Fore, Style
 
 import commands
-import pkgutil
 
 
 class CommandService:

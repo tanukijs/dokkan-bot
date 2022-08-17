@@ -3,4 +3,4 @@ colorama
 pyCryptodome
 PySimpleGUI
 requests
-orator
+peewee

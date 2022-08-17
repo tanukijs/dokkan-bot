@@ -2,7 +2,7 @@ from typing import Any
 
 from colorama import Style, Fore
 
-import config
+import models.game
 import network
 
 _DIFFICULTIES = ['normal', 'very_hard', 'super_hard1', 'super_hard2', 'super_hard3']
@@ -147,34 +147,34 @@ class StageService:
                     print(x['item_type'])
 
             for x in supportitemsset:
-                config.SupportItems.find_or_fail(x).name
-                print(Fore.CYAN + Style.BRIGHT + config.SupportItems.find(x).name + ' x' + str(supportitems.count(x)))
+                support_item: models.game.SupportItems = models.game.SupportItems.get_by_id(x)
+                print(Fore.CYAN + Style.BRIGHT + support_item.name + ' x' + str(supportitems.count(x)))
 
             for x in awakeningitemsset:
-                config.AwakeningItems.find_or_fail(x).name
-                print(Fore.MAGENTA + Style.BRIGHT + config.AwakeningItems.find(x).name + ' x' + str(
+                awakening_item: models.game.AwakeningItems = models.game.AwakeningItems.get_by_id(x)
+                print(Fore.MAGENTA + Style.BRIGHT + awakening_item.name + ' x' + str(
                     awakeningitems.count(x)))
 
             for x in trainingitemsset:
-                config.TrainingItems.find_or_fail(x).name
-                print(Fore.RED + Style.BRIGHT + config.TrainingItems.find(x).name + ' x' + str(trainingitems.count(x)))
+                training_item: models.game.TrainingItems = models.game.TrainingItems.get_by_id(x)
+                print(Fore.RED + Style.BRIGHT + training_item.name + ' x' + str(trainingitems.count(x)))
 
             for x in potentialitemsset:
-                config.PotentialItems.find_or_fail(x).name
-                print(config.PotentialItems.find_or_fail(x).name + ' x' + str(potentialitems.count(x)))
+                potential_item: models.game.PotentialItems = models.game.PotentialItems.get_by_id(x)
+                print(potential_item.name + ' x' + str(potentialitems.count(x)))
 
             for x in treasureitemsset:
-                config.TreasureItems.find_or_fail(x).name
+                treasure_item: models.game.TreasureItems = models.game.TreasureItems.get_by_id(x)
                 print(
-                    Fore.GREEN + Style.BRIGHT + config.TreasureItems.find(x).name + ' x' + str(treasureitems.count(x)))
+                    Fore.GREEN + Style.BRIGHT + treasure_item.name + ' x' + str(treasureitems.count(x)))
 
             for x in trainingfieldsset:
-                config.TrainingFields.find_or_fail(x).name
-                print(config.TrainingFields.find(x).name + ' x' + str(trainingfields.count(x)))
+                training_field: models.game.TrainingFields = models.game.TrainingFields.get_by_id(x)
+                print(training_field.name + ' x' + str(trainingfields.count(x)))
 
             for x in carditemsset:
-                config.Cards.find_or_fail(x).name
-                print(config.Cards.find(x).name + ' x' + str(carditems.count(x)))
+                card: models.game.Cards = models.game.Cards.get_by_id(x)
+                print(card.name + ' x' + str(carditems.count(x)))
 
             print(Fore.YELLOW + Style.BRIGHT + 'Stones x' + str(stones))
 

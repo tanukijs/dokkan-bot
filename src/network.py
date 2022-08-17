@@ -3,7 +3,6 @@ import urllib.parse
 from typing import Optional, Any
 
 import requests
-import simplejson.errors
 from colorama import Fore
 from requests import Response
 
@@ -209,6 +208,10 @@ def get_rmbattles_teams(team_id: str):
 
 def get_zbattles_supporters(stage_id: str):
     return __get('/z_battles/' + stage_id + '/supporters')
+
+
+def get_item_reverse_resolutions_awakening_items():
+    return __get('/item_reverse_resolutions/awakening_items')
 
 
 def put_user(

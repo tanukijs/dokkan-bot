@@ -1,6 +1,6 @@
 import config
-from config import GameContext
 from commands import help
+from config import GameContext
 
 NAME = 'unload'
 DESCRIPTION = 'Disconnect and get back to the login menu'

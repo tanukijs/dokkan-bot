@@ -6,7 +6,6 @@ import config
 import network
 from classes.Game import GameAccount
 from commands import gifts, missions, tutorial, help
-
 from services.account import AccountService
 from services.database import DatabaseService
 

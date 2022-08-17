@@ -1,4 +1,5 @@
 import config
+import models.game
 import network
 from commands import stage
 
@@ -13,7 +14,7 @@ def run():
         if 140 <= event['id'] < 145:
             for quest in event['quests']:
                 quest_id = int(quest['id'])
-                sugorokus = config.Sugoroku.where('quest_id', '=', quest_id).get()
+                sugorokus: list[models.game.SugorokuMaps] = models.game.SugorokuMaps.select().where(models.game.SugorokuMaps.quest_id == quest_id).get()
                 difficulties = []
                 for sugoroku in sugorokus:
                     stage.run(quest_id, sugoroku.difficulty)
