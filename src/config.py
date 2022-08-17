@@ -1,3 +1,4 @@
+from os import path
 from enum import Enum
 from pathlib import Path
 from typing import Optional
@@ -13,6 +14,7 @@ it's better to manually update them along with the bot to prevent account bans f
 noted here: https://twitter.com/dbzspace/status/1106316112638210050
 we're not sure what the 2 hashes are of... - k1mpl0s
 '''
+ROOT_DIR: Path = Path(path.dirname(path.abspath(__file__))).parent
 
 ANDROID_PLATFORM = GamePlatform(
     name='android',
@@ -37,7 +39,7 @@ GB_ENV = GameEnvironment(
     port=443,
     version_code='5.4.0-c836f25f0997f70e1f5210864a41e078b021034d6a7554e6f70e70e527d82aee',
     db_password=bytearray('9bf9c6ed9d537c399a6c4513e92ab24717e1a488381e3338593abd923fc8a13b'.encode('utf8')),
-    db_path=Path('data/gb.db'),
+    db_path=Path(ROOT_DIR, 'data/gb.db'),
     country='FR',
     currency='EUR'
 )
@@ -49,7 +51,7 @@ JP_ENV = GameEnvironment(
     port=443,
     version_code='5.5.1-3dce6ea90bfc690de24bd70fbea42ab4310129aa36cad35dfbbe2fcb096f8711',
     db_password=bytearray('2db857e837e0a81706e86ea66e2d1633'.encode('utf8')),
-    db_path=Path('data/jp.db'),
+    db_path=Path(ROOT_DIR, 'data/jp.db'),
     country='FR',
     currency='EUR'
 )

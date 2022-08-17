@@ -16,7 +16,7 @@ CONTEXT = [config.GameContext.AUTH]
 
 
 def run(file_name: str):
-    file_path = Path('saves', file_name + '.json')
+    file_path = Path(config.ROOT_DIR, 'saves', file_name + '.json')
     if not file_path.exists():
         print(Fore.RED + Style.BRIGHT + "Could not find " + file_name)
         return

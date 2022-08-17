@@ -16,7 +16,7 @@ CONTEXT = [config.GameContext.AUTH]
 
 
 def run(file_name: str):
-    file_path = Path('saves', file_name.strip() + '.json')
+    file_path = Path(config.ROOT_DIR, 'saves', file_name.strip() + '.json')
     if file_path.exists():
         print('this name is already taken. please select another one.')
         return

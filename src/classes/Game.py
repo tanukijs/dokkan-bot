@@ -72,6 +72,7 @@ class GameAccount:
             'identifier': self.identifier,
             'platform': config.game_env.name
         })
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_text(json_data, encoding='utf8')
 
     @staticmethod
