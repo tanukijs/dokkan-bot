@@ -19,12 +19,18 @@ def print_title(title: str):
 
 def run():
     r = network.get_resources_login(
+        awakening_items=True,
         potential_items=True,
         training_items=True,
         support_items=True,
         treasure_items=True,
         special_items=True
     )
+
+    print_title('Awakening Items')
+    for item in r['awakening_items']:
+        awakening_item: Optional[models.game.AwakeningItems] = models.game.AwakeningItems.get_by_id(item['awakening_item_id'])
+        print(awakening_item.name + ' x' + str(item['quantity']))
 
     print_title('Support Items')
     for item in r['support_items']['items']:
@@ -44,8 +50,7 @@ def run():
     print_title('Treasure Items')
     for item in r['treasure_items']['user_treasure_items']:
         treasure_item: Optional[models.game.TreasureItems] = models.game.TreasureItems.get_by_id(item['treasure_item_id'])
-        print(treasure_item.name + ' x' + str(
-            item['quantity']))
+        print(treasure_item.name + ' x' + str(item['quantity']))
 
     print_title('Special Items')
     for item in r['special_items']:
