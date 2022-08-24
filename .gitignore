@@ -3,3 +3,5 @@
 saves/
 data/
 config.json
+*.so
+build/

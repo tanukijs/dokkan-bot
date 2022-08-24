@@ -1,3 +1,5 @@
+import traceback
+
 from colorama import Fore
 
 import commands
@@ -20,7 +22,9 @@ def execute(user_input: str):
             print('invalid command arguments: ', command_args)
             print(error)
         except Exception as error:
-            print('command error', error)
+            print('command error')
+            traceback.print_exc()
+            print(error)
 
 
 def run():
