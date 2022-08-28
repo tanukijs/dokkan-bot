@@ -327,6 +327,10 @@ def put_apologies_accept():
     return __put('/apologies/accept')
 
 
+def put_card_favorite(card_id: int, is_favorite: bool):
+    return __put(f'/cards/{card_id}/favorite', {'card': {'is_favorite': is_favorite}})
+
+
 def post_auth_signup(
         unique_id: str,
         captcha_session_key: Optional[str] = None
